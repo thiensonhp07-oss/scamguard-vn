@@ -2,11 +2,11 @@
 <img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
 </div>
 
-# Run and deploy your AI Studio app
+# 🛡️ ScamGuard VN - AI-Powered Fraud Defense & Security Lab
 
-This contains everything you need to run your app locally.
+> 🌐 **Website chính thức đã online**: [https://thiensonhp07-oss.github.io/](https://thiensonhp07-oss.github.io/)
 
-View your app in AI Studio: https://ai.studio/apps/fc2e5b05-9680-43fb-a973-aa8b4a15d51e
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/thiensonhp07-oss/scamguard-vn)
 
 ## Run Locally
 
