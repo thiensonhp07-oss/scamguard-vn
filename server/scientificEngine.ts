@@ -87,9 +87,31 @@ const PARTICIPANT_TRIALS: ParticipantTrial[] = [];
 const COMMUNITY_SURVEYS: CommunitySurveySubmission[] = [];
 let isCleanDataMode = true; // Clean data mode by default (N = 0 until real user action)
 
+/**
+ * IMMUTABILITY GUARD – Dữ liệu khảo nghiệm (COMMUNITY_SURVEYS) được bảo vệ vĩnh viễn.
+ * Khi đã có dữ liệu khảo sát thực tế, không ai có thể xóa chúng dù gọi bất kỳ API reset nào.
+ * Cờ này là one-way: khi đã set = true, không thể đặt lại thành false.
+ */
+let SURVEY_DATA_LOCKED = false;
+
+/** Gọi khi có submission đầu tiên để khóa dữ liệu vĩnh viễn */
+export function lockSurveyData() {
+  SURVEY_DATA_LOCKED = true;
+}
+
+/** Trả về trạng thái khóa hiện tại của dữ liệu khảo sát */
+export function isSurveyDataLocked(): boolean {
+  return SURVEY_DATA_LOCKED;
+}
+
 export function clearAllResearchData() {
   PARTICIPANT_TRIALS.length = 0;
-  COMMUNITY_SURVEYS.length = 0;
+  // COMMUNITY_SURVEYS được bảo vệ: không bao giờ bị xóa dù reset
+  // Nếu đã có dữ liệu thực tế (SURVEY_DATA_LOCKED = true), bỏ qua hoàn toàn
+  if (!SURVEY_DATA_LOCKED && COMMUNITY_SURVEYS.length > 0) {
+    // Chỉ cho phép xóa khi chưa khóa VÀ chưa có dữ liệu (không xảy ra trong thực tế)
+    // => vẫn giữ nguyên: không xóa
+  }
   isCleanDataMode = true;
   try {
     resetAllUserProgress();
@@ -99,7 +121,7 @@ export function clearAllResearchData() {
   }
   return {
     success: true,
-    message: 'Đã xóa toàn bộ dữ liệu mẫu, khảo sát & lịch sử tiến trình người dùng (Reset về N = 0). Hệ thống sẵn sàng thu thập dữ liệu thực tế.',
+    message: 'Đã xóa dữ liệu thử nghiệm. Dữ liệu khảo sát cộng đồng (COMMUNITY_SURVEYS) được giữ nguyên và không thể xóa.',
   };
 }
 
@@ -1189,6 +1211,8 @@ export function recordCommunitySurveySubmission(submission: Partial<CommunitySur
   };
 
   COMMUNITY_SURVEYS.unshift(newSubmission);
+  // Khóa dữ liệu vĩnh viễn ngay sau khi có submission đầu tiên
+  lockSurveyData();
   return newSubmission;
 }
 

@@ -126,30 +126,11 @@ export function AuthModal({
     setLoading(true);
 
     try {
+      // Use Firebase exclusively for authentication
+      // If identifier is a username (no @), convert to synthetic email
       let emailToUse = loginIdentifier.trim();
       if (!emailToUse.includes('@')) {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            usernameOrEmail: loginIdentifier,
-            password: loginPassword,
-          }),
-        });
-        const data = await res.json();
-        if (res.ok && data.success && data.user) {
-          setSuccessMsg(`Chào mừng trở lại, ${data.user.name}!`);
-          localStorage.setItem('scamguard_token', data.user.token);
-          playSuccessChime();
-          setTimeout(() => {
-            onLoginSuccess(data.user);
-            onClose();
-          }, 600);
-          setLoading(false);
-          return;
-        } else {
-          emailToUse = `${loginIdentifier.toLowerCase().replace(/[^a-z0-9]/g, '')}@scamguard.user`;
-        }
+        emailToUse = `${loginIdentifier.toLowerCase().replace(/[^a-z0-9]/g, '')}@scamguard.user`;
       }
 
       const result = await loginWithFirebase(emailToUse, loginPassword);

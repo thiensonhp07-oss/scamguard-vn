@@ -18,6 +18,7 @@ import {
   getAllCommunitySurveys,
   recordCommunitySurveySubmission,
   clearAllResearchData,
+  isSurveyDataLocked,
   calculateSampleSizeAndPower,
   getExclusionLogs,
   logDataExclusion,
@@ -538,6 +539,14 @@ async function startServer() {
   // Reset all research datasets to clear mock/fake data for real student collection
   app.post('/api/research/reset', (req, res) => {
     try {
+      // Bảo vệ dữ liệu khảo sát: nếu đã có submission thực tế, từ chối xóa
+      if (isSurveyDataLocked()) {
+        return res.status(403).json({
+          success: false,
+          error: 'Dữ liệu khảo sát cộng đồng đã được khóa vĩnh viễn. Không thể xóa dữ liệu khảo nghiệm thực tế.',
+          locked: true,
+        });
+      }
       const result = clearAllResearchData();
       res.json(result);
     } catch (err: any) {
@@ -1087,13 +1096,14 @@ Trả về JSON:
   });
 
   // Reset ALL user lesson data, campaign progress, research trials, and account profile
+  // NOTE: COMMUNITY_SURVEYS data is NEVER deleted regardless of this call
   app.post('/api/account/reset-all', accountLimiter, (req, res) => {
     try {
       const userId = (req.headers['x-user-id'] as string) || 'guest_user';
       deleteUserData(userId);
       resetUserAccountData(userId);
       resetAllUserProgress();
-      clearAllResearchData();
+      clearAllResearchData(); // Sẽ không xóa COMMUNITY_SURVEYS (protected)
       addAuditLog({
         ip: req.ip || 'unknown',
         userId,
@@ -1102,7 +1112,7 @@ Trả về JSON:
       });
       res.json({
         success: true,
-        message: 'Đã reset hoàn tất toàn bộ bài học, khảo sát thực nghiệm (N = 0) và dữ liệu cá nhân!',
+        message: 'Đã reset toàn bộ bài học và dữ liệu cá nhân. Dữ liệu khảo sát cộng đồng được giữ nguyên và không thể xóa.',
       });
     } catch (err: any) {
       res.status(500).json({ success: false, error: err.message || 'Lỗi khi reset dữ liệu' });
