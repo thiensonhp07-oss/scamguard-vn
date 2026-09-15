@@ -1,0 +1,22 @@
+name: 24/7 Cloud Keep-Alive Cronjob
+
+on:
+  schedule:
+    # Runs every 10 minutes to prevent Render free instance from sleeping
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Keep-Alive Ping to Render Backend
+        run: |
+          echo "Sending keep-alive ping to ScamGuard VN backend..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -m 20 "https://scamguard-vn.onrender.com/api/health")
+          echo "Response HTTP Status: $STATUS"
+          if [ "$STATUS" -eq 200 ]; then
+            echo "Server is awake and healthy!"
+          else
+            echo "Warning: Response code $STATUS"
+          fi
