@@ -1,0 +1,8 @@
+{
+  "name": "SCAMGUARD VN",
+  "description": "An AI-powered adaptive cybersecurity training and scam-risk assessment system that detects social-engineering threats, trains users through realistic simulations, and quantitatively measures changes in scam resistance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "entities": {
+    "UserProfile": {
+      "collection": "users",
+      "fields": {
+        "id": { "type": "string", "description": "Auth UID" },
+        "name": { "type": "string", "description": "Display name" },
+        "email": { "type": "string", "description": "Email address" },
+        "username": { "type": "string", "description": "Username handle" },
+        "mode": { "type": "string", "description": "Experience mode (adult, senior, teen, kids, family)" },
+        "overallScore": { "type": "number", "description": "Overall defense score out of 100" },
+        "xp": { "type": "number", "description": "Experience points" },
+        "streakDays": { "type": "number", "description": "Daily defense streak" },
+        "completedScenarios": { "type": "array", "description": "List of completed scenario IDs" },
+        "trustedContacts": { "type": "array", "description": "Trusted emergency contacts" },
+        "avatarUrl": { "type": "string", "description": "Avatar image URL" },
+        "provider": { "type": "string", "description": "Auth provider" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" }
+      }
+    },
+    "ScamReport": {
+      "collection": "scamReports",
+      "fields": {
+        "id": { "type": "string", "description": "Report ID" },
+        "userId": { "type": "string", "description": "Author user ID" },
+        "riskScore": { "type": "number", "description": "Calculated risk score" },
+        "riskLevel": { "type": "string", "description": "Risk level" },
+        "summary": { "type": "string", "description": "Analysis summary" },
+        "detectedTactics": { "type": "array", "description": "Tactics found" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      }
+    }
+  }
+}
