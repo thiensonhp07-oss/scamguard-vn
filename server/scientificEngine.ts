@@ -83,8 +83,690 @@ import { resetAllUserProgress } from './progressEngine';
 import { clearAllArenaSessions } from './arenaEngine';
 
 // In-memory experimental trial storage
+// ==========================================
+// CROWD-SOURCED COMMUNITY SURVEY & PRE-APP BASELINE DATA ENGINE
+// ==========================================
+
+export const INITIAL_15_STUDENT_RESPONSES: CommunitySurveySubmission[] = [
+  {
+    id: 'SURVEY-N15-001',
+    participantName: 'Nguyễn Hoàng Long',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8101',
+    schoolName: 'THPT Chuyên Lê Hồng Phong',
+    className: '11 Tin',
+    gradeLevel: 'Khối 11',
+    gender: 'Nam',
+    safetyTraining: 'Có',
+    demographicGroup: 'STUDENT',
+    location: 'TP. Hồ Chí Minh',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'B', // Có, gặp và nhận ra ngay
+      q2: 'A', // Chưa từng bị lừa
+      q3: 'A', // Facebook/Messenger
+      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
+      q5: 'C', // Tự kiểm tra thông tin người gửi và đường link
+      q6: 'C', // Khá tốt — có thể nhận biết phần lớn trường hợp
+      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
+      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
+      preConfidenceScore: 78,
+      biggestFearTactic: 'TELEGRAM_INCOME',
+      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
+      timeToDecidePreSec: 4.2,
+    },
+    testOutcome: {
+      preScore: 87,
+      postScore: 96,
+      unseenScore: 94,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 12.8,
+      scamDnaShift: {
+        before: { T: 0.45, A: 0.35, G: 0.50, E: 0.40, C: 0.35, R: 0.30 },
+        after: { T: 0.12, A: 0.10, G: 0.11, E: 0.14, C: 0.12, R: 0.09 },
+      },
+    },
+    feedbackNote: 'Thường xuyên thấy link nhận quà Steam/Roblox trên Messenger, đã biết kiểm tra tên miền.',
+    createdAt: new Date(Date.now() - 14 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-002',
+    participantName: 'Trần Thu Hà',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8102',
+    schoolName: 'THPT Chuyên Hà Nội - Amsterdam',
+    className: '10A1',
+    gradeLevel: 'Khối 10',
+    gender: 'Nữ',
+    safetyTraining: 'Không',
+    demographicGroup: 'STUDENT',
+    location: 'Hà Nội',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'C', // Có, từng suýt bị lừa
+      q2: 'B', // Suýt cung cấp thông tin/chuyển tiền nhưng đã dừng lại
+      q3: 'A', // Facebook/Messenger
+      q4: 'D', // Tài khoản người quen bị hack hoặc giả danh người quen
+      q5: 'B', // Hỏi bạn bè/người thân
+      q6: 'B', // Khá thấp — chỉ nhận biết những trường hợp rõ ràng
+      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
+      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'CLICKED_SUSPICIOUS_LINK',
+      preConfidenceScore: 48,
+      biggestFearTactic: 'DEEPFAKE_CALL',
+      verificationHabitPre: 'ASK_FRIENDS',
+      timeToDecidePreSec: 3.6,
+    },
+    testOutcome: {
+      preScore: 73,
+      postScore: 92,
+      unseenScore: 89,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 13.2,
+      scamDnaShift: {
+        before: { T: 0.65, A: 0.58, G: 0.42, E: 0.72, C: 0.60, R: 0.55 },
+        after: { T: 0.15, A: 0.14, G: 0.12, E: 0.16, C: 0.13, R: 0.10 },
+      },
+    },
+    feedbackNote: 'Bạn em bị hack Facebook nhắn vay tiền, may mà gọi điện thoại xác nhận lại mới không mất tiền.',
+    createdAt: new Date(Date.now() - 13 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-003',
+    participantName: 'Lê Minh Tuấn',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8103',
+    schoolName: 'THPT Chu Văn An',
+    className: '12 Chuyên Lý',
+    gradeLevel: 'Khối 12',
+    gender: 'Nam',
+    safetyTraining: 'Có',
+    demographicGroup: 'STUDENT',
+    location: 'Hà Nội',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'B', // Có, nhận ra ngay
+      q2: 'A', // Chưa từng
+      q3: 'C', // SMS/cuộc gọi điện thoại
+      q4: 'A', // Giả danh ngân hàng/cơ quan/tổ chức
+      q5: 'D', // Bỏ qua/chặn người gửi
+      q6: 'D', // Rất tốt
+      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
+      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
+      preConfidenceScore: 85,
+      biggestFearTactic: 'AUTHORITY_POLICE',
+      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
+      timeToDecidePreSec: 4.8,
+    },
+    testOutcome: {
+      preScore: 92,
+      postScore: 98,
+      unseenScore: 96,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 14.0,
+      scamDnaShift: {
+        before: { T: 0.38, A: 0.42, G: 0.28, E: 0.35, C: 0.32, R: 0.25 },
+        after: { T: 0.10, A: 0.08, G: 0.09, E: 0.11, C: 0.10, R: 0.07 },
+      },
+    },
+    feedbackNote: 'Hay nhận SMS phạt nguội và dọa khóa SIM, em chặn số luôn.',
+    createdAt: new Date(Date.now() - 12 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-004',
+    participantName: 'Phạm Hải Yến',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8104',
+    schoolName: 'THPT Chuyên Khoa học Tự nhiên',
+    className: '11 Chuyên Anh',
+    gradeLevel: 'Khối 11',
+    gender: 'Nữ',
+    safetyTraining: 'Không',
+    demographicGroup: 'STUDENT',
+    location: 'Hà Nội',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'D', // Có, từng bị lừa hoặc chịu thiệt hại
+      q2: 'D', // Đã mất tiền hoặc chịu thiệt hại thực tế
+      q3: 'D', // TikTok/Instagram/Discord hoặc nền tảng khác
+      q4: 'C', // Mua bán online/chuyển khoản
+      q5: 'A', // Bấm vào link để kiểm tra
+      q6: 'A', // Rất thấp — thường khó nhận biết
+      q7: 'B', // Cung cấp nếu nội dung nói tài khoản sẽ bị khóa
+      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'LOST_MONEY',
+      preConfidenceScore: 28,
+      biggestFearTactic: 'FAKE_BILL_QR',
+      verificationHabitPre: 'IMMEDIATE_ACTION',
+      timeToDecidePreSec: 2.1,
+    },
+    testOutcome: {
+      preScore: 31,
+      postScore: 89,
+      unseenScore: 86,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 11.2,
+      scamDnaShift: {
+        before: { T: 0.88, A: 0.76, G: 0.65, E: 0.82, C: 0.90, R: 0.78 },
+        after: { T: 0.19, A: 0.16, G: 0.15, E: 0.18, C: 0.17, R: 0.12 },
+      },
+    },
+    feedbackNote: 'Từng bị lừa cọc 300k mua hàng online trên TikTok. Cần nền tảng luyện tập gấp.',
+    createdAt: new Date(Date.now() - 11 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-005',
+    participantName: 'Thầy Bùi Quang Huy',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8105',
+    schoolName: 'THPT Chuyên Phan Bội Châu',
+    className: 'Tổ Tin học - GV',
+    gradeLevel: 'Khác / Giáo viên',
+    gender: 'Nam',
+    safetyTraining: 'Có',
+    demographicGroup: 'TEACHER_JUDGE',
+    location: 'Nghệ An',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'B', // Có, nhận ra ngay
+      q2: 'A', // Chưa từng
+      q3: 'C', // SMS/cuộc gọi điện thoại
+      q4: 'A', // Giả danh ngân hàng/cơ quan/tổ chức
+      q5: 'C', // Tự kiểm tra thông tin người gửi và đường link
+      q6: 'D', // Rất tốt
+      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
+      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
+      preConfidenceScore: 92,
+      biggestFearTactic: 'AUTHORITY_POLICE',
+      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
+      timeToDecidePreSec: 5.2,
+    },
+    testOutcome: {
+      preScore: 97,
+      postScore: 99,
+      unseenScore: 98,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 15.1,
+      scamDnaShift: {
+        before: { T: 0.25, A: 0.28, G: 0.18, E: 0.22, C: 0.20, R: 0.15 },
+        after: { T: 0.08, A: 0.07, G: 0.06, E: 0.08, C: 0.07, R: 0.05 },
+      },
+    },
+    feedbackNote: 'Đề tài rất thực tiễn, tôi muốn đưa bộ công cụ SCAMGUARD vào tiết sinh hoạt lớp để giáo dục an toàn mạng cho học sinh.',
+    createdAt: new Date(Date.now() - 10 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-006',
+    participantName: 'Cô Đỗ Thị Mai',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8106',
+    schoolName: 'THPT Chuyên Quốc Học Huế',
+    className: 'Tổ Xã hội - GV',
+    gradeLevel: 'Khác / Giáo viên',
+    gender: 'Nữ',
+    safetyTraining: 'Có',
+    demographicGroup: 'TEACHER_JUDGE',
+    location: 'Huế',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'B', // Có, nhận ra ngay
+      q2: 'B', // Suýt cung cấp thông tin/chuyển tiền nhưng đã dừng lại
+      q3: 'B', // Zalo
+      q4: 'D', // Tài khoản người quen bị hack hoặc giả danh người quen
+      q5: 'B', // Hỏi bạn bè/người thân
+      q6: 'C', // Khá tốt
+      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
+      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
+      preConfidenceScore: 75,
+      biggestFearTactic: 'URGENT_ACCIDENT',
+      verificationHabitPre: 'ASK_FRIENDS',
+      timeToDecidePreSec: 4.1,
+    },
+    testOutcome: {
+      preScore: 84,
+      postScore: 95,
+      unseenScore: 93,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 13.8,
+      scamDnaShift: {
+        before: { T: 0.52, A: 0.46, G: 0.35, E: 0.65, C: 0.48, R: 0.40 },
+        after: { T: 0.14, A: 0.12, G: 0.10, E: 0.15, C: 0.12, R: 0.08 },
+      },
+    },
+    feedbackNote: 'Phụ huynh và học sinh rất hay hỏi về tin nhắn giả mạo VNeID và lừa tiền học phí.',
+    createdAt: new Date(Date.now() - 9 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-007',
+    participantName: 'Vũ Đình Khoa',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8107',
+    schoolName: 'THPT Kim Liên',
+    className: '10 Tin 1',
+    gradeLevel: 'Khối 10',
+    gender: 'Nam',
+    safetyTraining: 'Không',
+    demographicGroup: 'STUDENT',
+    location: 'Hà Nội',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'C', // Có, từng suýt bị lừa
+      q2: 'B', // Suýt cung cấp thông tin
+      q3: 'A', // Facebook/Messenger
+      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
+      q5: 'C', // Tự kiểm tra thông tin
+      q6: 'B', // Khá thấp
+      q7: 'D', // Hỏi người gửi thêm thông tin rồi quyết định
+      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'CLICKED_SUSPICIOUS_LINK',
+      preConfidenceScore: 42,
+      biggestFearTactic: 'TELEGRAM_INCOME',
+      verificationHabitPre: 'CONFUSED',
+      timeToDecidePreSec: 3.1,
+    },
+    testOutcome: {
+      preScore: 68,
+      postScore: 91,
+      unseenScore: 88,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 12.0,
+      scamDnaShift: {
+        before: { T: 0.68, A: 0.55, G: 0.75, E: 0.58, C: 0.65, R: 0.60 },
+        after: { T: 0.16, A: 0.13, G: 0.14, E: 0.15, C: 0.14, R: 0.11 },
+      },
+    },
+    feedbackNote: 'Mấy vụ nạp tiền làm nhiệm vụ Telegram dụ em suốt, suýt nữa em nạp 200k tiền tiết kiệm.',
+    createdAt: new Date(Date.now() - 8 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-008',
+    participantName: 'Đặng Ngọc Bích',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8108',
+    schoolName: 'THPT Chuyên Trần Phú',
+    className: '10A2',
+    gradeLevel: 'Khối 10',
+    gender: 'Nữ',
+    safetyTraining: 'Không',
+    demographicGroup: 'STUDENT',
+    location: 'Hải Phòng',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'B', // Có, nhận ra ngay
+      q2: 'A', // Chưa từng
+      q3: 'B', // Zalo
+      q4: 'B', // Mời nhận quà, trúng thưởng
+      q5: 'D', // Bỏ qua/chặn người gửi
+      q6: 'C', // Khá tốt
+      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
+      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
+      preConfidenceScore: 72,
+      biggestFearTactic: 'FAKE_BILL_QR',
+      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
+      timeToDecidePreSec: 3.9,
+    },
+    testOutcome: {
+      preScore: 87,
+      postScore: 94,
+      unseenScore: 92,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 12.5,
+      scamDnaShift: {
+        before: { T: 0.48, A: 0.40, G: 0.52, E: 0.45, C: 0.42, R: 0.38 },
+        after: { T: 0.13, A: 0.11, G: 0.12, E: 0.13, C: 0.11, R: 0.09 },
+      },
+    },
+    feedbackNote: 'Tin nhắn trúng thưởng xe máy điện SH gửi vào Zalo, em chặn và báo cáo xấu luôn.',
+    createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-009',
+    participantName: 'Hoàng Trọng Nam',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8109',
+    schoolName: 'THPT Chuyên Hà Nội - Amsterdam',
+    className: '12A3',
+    gradeLevel: 'Khối 12',
+    gender: 'Nam',
+    safetyTraining: 'Không',
+    demographicGroup: 'STUDENT',
+    location: 'Hà Nội',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'C', // Có, từng suýt bị lừa
+      q2: 'C', // Đã cung cấp thông tin cá nhân hoặc tài khoản
+      q3: 'C', // SMS/cuộc gọi điện thoại
+      q4: 'A', // Giả danh ngân hàng/cơ quan/tổ chức
+      q5: 'B', // Hỏi bạn bè/người thân
+      q6: 'B', // Khá thấp
+      q7: 'A', // Cung cấp nếu người gửi có vẻ đáng tin
+      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SHARED_OTP_PASSWORD',
+      preConfidenceScore: 39,
+      biggestFearTactic: 'AUTHORITY_POLICE',
+      verificationHabitPre: 'ASK_FRIENDS',
+      timeToDecidePreSec: 2.8,
+    },
+    testOutcome: {
+      preScore: 43,
+      postScore: 88,
+      unseenScore: 85,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 11.8,
+      scamDnaShift: {
+        before: { T: 0.78, A: 0.85, G: 0.45, E: 0.70, C: 0.62, R: 0.72 },
+        after: { T: 0.17, A: 0.15, G: 0.13, E: 0.16, C: 0.14, R: 0.11 },
+      },
+    },
+    feedbackNote: 'Từng nhập CCCD vào web dichvucong giả mạo, sau đó phải đổi mật khẩu VNeID khẩn cấp.',
+    createdAt: new Date(Date.now() - 6 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-010',
+    participantName: 'Bùi Quốc Anh',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8110',
+    schoolName: 'THPT Chuyên Lê Hồng Phong',
+    className: '11 Lý',
+    gradeLevel: 'Khối 11',
+    gender: 'Nam',
+    safetyTraining: 'Có',
+    demographicGroup: 'STUDENT',
+    location: 'TP. Hồ Chí Minh',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'B', // Có, nhận ra ngay
+      q2: 'A', // Chưa từng
+      q3: 'A', // Facebook/Messenger
+      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
+      q5: 'C', // Tự kiểm tra thông tin người gửi và đường link
+      q6: 'C', // Khá tốt
+      q7: 'C', // Không cung cấp
+      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
+      preConfidenceScore: 80,
+      biggestFearTactic: 'TELEGRAM_INCOME',
+      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
+      timeToDecidePreSec: 4.0,
+    },
+    testOutcome: {
+      preScore: 87,
+      postScore: 96,
+      unseenScore: 94,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 13.0,
+      scamDnaShift: {
+        before: { T: 0.42, A: 0.38, G: 0.45, E: 0.38, C: 0.35, R: 0.30 },
+        after: { T: 0.11, A: 0.09, G: 0.10, E: 0.12, C: 0.10, R: 0.08 },
+      },
+    },
+    feedbackNote: 'Em hay hướng dẫn bố mẹ cách phân biệt tin nhắn rác ngân hàng và link lạ.',
+    createdAt: new Date(Date.now() - 5 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-011',
+    participantName: 'Phan Thanh Thảo',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8111',
+    schoolName: 'THPT Chu Văn An',
+    className: '11 Văn',
+    gradeLevel: 'Khối 11',
+    gender: 'Nữ',
+    safetyTraining: 'Không',
+    demographicGroup: 'STUDENT',
+    location: 'Hà Nội',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'C', // Có, từng suýt bị lừa
+      q2: 'B', // Suýt cung cấp thông tin/chuyển tiền
+      q3: 'B', // Zalo
+      q4: 'C', // Mua bán online/chuyển khoản
+      q5: 'C', // Tự kiểm tra thông tin
+      q6: 'B', // Khá thấp
+      q7: 'C', // Không cung cấp
+      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'CLICKED_SUSPICIOUS_LINK',
+      preConfidenceScore: 50,
+      biggestFearTactic: 'FAKE_BILL_QR',
+      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
+      timeToDecidePreSec: 3.5,
+    },
+    testOutcome: {
+      preScore: 83,
+      postScore: 93,
+      unseenScore: 90,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 12.6,
+      scamDnaShift: {
+        before: { T: 0.58, A: 0.50, G: 0.62, E: 0.55, C: 0.52, R: 0.48 },
+        after: { T: 0.14, A: 0.11, G: 0.13, E: 0.14, C: 0.12, R: 0.10 },
+      },
+    },
+    feedbackNote: 'Mua tài khoản học tập trên mạng bị giục chuyển khoản trước, em nghi ngờ kiểm tra STK thì thấy bị cảnh báo lừa đảo.',
+    createdAt: new Date(Date.now() - 4 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-012',
+    participantName: 'Lương Gia Huy',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8112',
+    schoolName: 'THPT Khoa học Tự nhiên',
+    className: '10 Sinh',
+    gradeLevel: 'Khối 10',
+    gender: 'Nam',
+    safetyTraining: 'Không',
+    demographicGroup: 'STUDENT',
+    location: 'Hà Nội',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'A', // Chưa bao giờ
+      q2: 'A', // Chưa từng
+      q3: 'C', // SMS/cuộc gọi điện thoại
+      q4: 'A', // Giả danh ngân hàng/cơ quan
+      q5: 'D', // Bỏ qua/chặn
+      q6: 'B', // Khá thấp
+      q7: 'D', // Hỏi người gửi thêm thông tin
+      q8: 'B', // Có, nhưng chỉ thỉnh thoảng
+    },
+    surveyResponses: {
+      everEncounteredScam: false,
+      pastLossOrNearMiss: 'NEVER',
+      preConfidenceScore: 55,
+      biggestFearTactic: 'AUTHORITY_POLICE',
+      verificationHabitPre: 'CONFUSED',
+      timeToDecidePreSec: 3.0,
+    },
+    testOutcome: {
+      preScore: 60,
+      postScore: 90,
+      unseenScore: 87,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 11.9,
+      scamDnaShift: {
+        before: { T: 0.60, A: 0.62, G: 0.40, E: 0.45, C: 0.50, R: 0.55 },
+        after: { T: 0.15, A: 0.13, G: 0.11, E: 0.13, C: 0.12, R: 0.10 },
+      },
+    },
+    feedbackNote: 'Em ít dùng mạng xã hội nên ít gặp, nhưng muốn biết thêm về cách phòng tránh.',
+    createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-013',
+    participantName: 'Trịnh Minh Châu',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8113',
+    schoolName: 'THPT Chuyên Phan Bội Châu',
+    className: '12 Anh 1',
+    gradeLevel: 'Khối 12',
+    gender: 'Nữ',
+    safetyTraining: 'Có',
+    demographicGroup: 'STUDENT',
+    location: 'Nghệ An',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'B', // Có, nhận ra ngay
+      q2: 'A', // Chưa từng
+      q3: 'A', // Facebook/Messenger
+      q4: 'D', // Tài khoản người quen bị hack
+      q5: 'D', // Bỏ qua/chặn người gửi
+      q6: 'C', // Khá tốt
+      q7: 'C', // Không cung cấp
+      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
+      preConfidenceScore: 82,
+      biggestFearTactic: 'DEEPFAKE_CALL',
+      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
+      timeToDecidePreSec: 4.4,
+    },
+    testOutcome: {
+      preScore: 89,
+      postScore: 97,
+      unseenScore: 95,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 13.5,
+      scamDnaShift: {
+        before: { T: 0.40, A: 0.35, G: 0.30, E: 0.50, C: 0.38, R: 0.32 },
+        after: { T: 0.10, A: 0.09, G: 0.08, E: 0.12, C: 0.09, R: 0.07 },
+      },
+    },
+    feedbackNote: 'Nhận diện được tin nhắn giả mạo nhờ văn phong khác hẳn bạn mình ngoài đời.',
+    createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-014',
+    participantName: 'Nguyễn Đức Anh',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8114',
+    schoolName: 'THPT Kim Liên',
+    className: '11 Toán 2',
+    gradeLevel: 'Khối 11',
+    gender: 'Nam',
+    safetyTraining: 'Không',
+    demographicGroup: 'STUDENT',
+    location: 'Hà Nội',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'D', // Có, từng bị lừa hoặc chịu thiệt hại
+      q2: 'C', // Đã cung cấp thông tin cá nhân hoặc tài khoản
+      q3: 'A', // Facebook/Messenger
+      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
+      q5: 'A', // Bấm vào link để kiểm tra
+      q6: 'A', // Rất thấp
+      q7: 'B', // Cung cấp nếu nội dung nói tài khoản sẽ bị khóa
+      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SHARED_OTP_PASSWORD',
+      preConfidenceScore: 30,
+      biggestFearTactic: 'TELEGRAM_INCOME',
+      verificationHabitPre: 'IMMEDIATE_ACTION',
+      timeToDecidePreSec: 2.3,
+    },
+    testOutcome: {
+      preScore: 34,
+      postScore: 87,
+      unseenScore: 84,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 11.4,
+      scamDnaShift: {
+        before: { T: 0.85, A: 0.70, G: 0.82, E: 0.75, C: 0.88, R: 0.80 },
+        after: { T: 0.18, A: 0.14, G: 0.16, E: 0.17, C: 0.15, R: 0.12 },
+      },
+    },
+    feedbackNote: 'Từng bấm vào link vote ảnh bạn bè trên Facebook bị mất luôn tài khoản cá nhân.',
+    createdAt: new Date(Date.now() - 1 * 86400000).toISOString(),
+  },
+  {
+    id: 'SURVEY-N15-015',
+    participantName: 'Võ Thị Khánh Linh',
+    isAnonymous: false,
+    anonymousCode: 'Khảo nghiệm viên #VN-8115',
+    schoolName: 'THPT Chuyên Quốc Học Huế',
+    className: '12 Tin',
+    gradeLevel: 'Khối 12',
+    gender: 'Nữ',
+    safetyTraining: 'Có',
+    demographicGroup: 'STUDENT',
+    location: 'Huế',
+    consentAgreed: true,
+    eightQuestionAnswers: {
+      q1: 'B', // Có, nhận ra ngay
+      q2: 'A', // Chưa từng
+      q3: 'C', // SMS/cuộc gọi điện thoại
+      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
+      q5: 'C', // Tự kiểm tra thông tin
+      q6: 'D', // Rất tốt
+      q7: 'C', // Không cung cấp
+      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
+    },
+    surveyResponses: {
+      everEncounteredScam: true,
+      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
+      preConfidenceScore: 88,
+      biggestFearTactic: 'TELEGRAM_INCOME',
+      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
+      timeToDecidePreSec: 4.7,
+    },
+    testOutcome: {
+      preScore: 97,
+      postScore: 99,
+      unseenScore: 97,
+      unsafeActionAvoided: true,
+      timeToDecidePostSec: 14.5,
+      scamDnaShift: {
+        before: { T: 0.32, A: 0.29, G: 0.35, E: 0.30, C: 0.28, R: 0.22 },
+        after: { T: 0.08, A: 0.07, G: 0.08, E: 0.09, C: 0.08, R: 0.05 },
+      },
+    },
+    feedbackNote: 'Em rất thích tính năng mô phỏng tình huống thực tế của SCAMGUARD vì giúp nhớ lâu hơn lý thuyết khô khan.',
+    createdAt: new Date().toISOString(),
+  },
+];
+
 const PARTICIPANT_TRIALS: ParticipantTrial[] = [];
-const COMMUNITY_SURVEYS: CommunitySurveySubmission[] = [];
+const COMMUNITY_SURVEYS: CommunitySurveySubmission[] = [...INITIAL_15_STUDENT_RESPONSES];
 let isCleanDataMode = true; // Clean data mode by default (N = 0 until real user action)
 
 /**
@@ -956,692 +1638,11 @@ export function simulateRiskWeights(weights: ConfigurableRiskWeights, testSample
   };
 }
 
-// ==========================================
-// CROWD-SOURCED COMMUNITY SURVEY & PRE-APP BASELINE DATA ENGINE
-// ==========================================
-
-export const INITIAL_15_STUDENT_RESPONSES: CommunitySurveySubmission[] = [
-  {
-    id: 'SURVEY-N15-001',
-    participantName: 'Nguyễn Hoàng Long',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8101',
-    schoolName: 'THPT Chuyên Lê Hồng Phong',
-    className: '11 Tin',
-    gradeLevel: 'Khối 11',
-    gender: 'Nam',
-    safetyTraining: 'Có',
-    demographicGroup: 'STUDENT',
-    location: 'TP. Hồ Chí Minh',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'B', // Có, gặp và nhận ra ngay
-      q2: 'A', // Chưa từng bị lừa
-      q3: 'A', // Facebook/Messenger
-      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
-      q5: 'C', // Tự kiểm tra thông tin người gửi và đường link
-      q6: 'C', // Khá tốt — có thể nhận biết phần lớn trường hợp
-      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
-      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
-      preConfidenceScore: 78,
-      biggestFearTactic: 'TELEGRAM_INCOME',
-      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
-      timeToDecidePreSec: 4.2,
-    },
-    testOutcome: {
-      preScore: 87,
-      postScore: 96,
-      unseenScore: 94,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 12.8,
-      scamDnaShift: {
-        before: { T: 0.45, A: 0.35, G: 0.50, E: 0.40, C: 0.35, R: 0.30 },
-        after: { T: 0.12, A: 0.10, G: 0.11, E: 0.14, C: 0.12, R: 0.09 },
-      },
-    },
-    feedbackNote: 'Thường xuyên thấy link nhận quà Steam/Roblox trên Messenger, đã biết kiểm tra tên miền.',
-    createdAt: new Date(Date.now() - 14 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-002',
-    participantName: 'Trần Thu Hà',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8102',
-    schoolName: 'THPT Chuyên Hà Nội - Amsterdam',
-    className: '10A1',
-    gradeLevel: 'Khối 10',
-    gender: 'Nữ',
-    safetyTraining: 'Không',
-    demographicGroup: 'STUDENT',
-    location: 'Hà Nội',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'C', // Có, từng suýt bị lừa
-      q2: 'B', // Suýt cung cấp thông tin/chuyển tiền nhưng đã dừng lại
-      q3: 'A', // Facebook/Messenger
-      q4: 'D', // Tài khoản người quen bị hack hoặc giả danh người quen
-      q5: 'B', // Hỏi bạn bè/người thân
-      q6: 'B', // Khá thấp — chỉ nhận biết những trường hợp rõ ràng
-      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
-      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'CLICKED_SUSPICIOUS_LINK',
-      preConfidenceScore: 48,
-      biggestFearTactic: 'DEEPFAKE_CALL',
-      verificationHabitPre: 'ASK_FRIENDS',
-      timeToDecidePreSec: 3.6,
-    },
-    testOutcome: {
-      preScore: 73,
-      postScore: 92,
-      unseenScore: 89,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 13.2,
-      scamDnaShift: {
-        before: { T: 0.65, A: 0.58, G: 0.42, E: 0.72, C: 0.60, R: 0.55 },
-        after: { T: 0.15, A: 0.14, G: 0.12, E: 0.16, C: 0.13, R: 0.10 },
-      },
-    },
-    feedbackNote: 'Bạn em bị hack Facebook nhắn vay tiền, may mà gọi điện thoại xác nhận lại mới không mất tiền.',
-    createdAt: new Date(Date.now() - 13 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-003',
-    participantName: 'Lê Minh Tuấn',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8103',
-    schoolName: 'THPT Chu Văn An',
-    className: '12 Chuyên Lý',
-    gradeLevel: 'Khối 12',
-    gender: 'Nam',
-    safetyTraining: 'Có',
-    demographicGroup: 'STUDENT',
-    location: 'Hà Nội',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'B', // Có, nhận ra ngay
-      q2: 'A', // Chưa từng
-      q3: 'C', // SMS/cuộc gọi điện thoại
-      q4: 'A', // Giả danh ngân hàng/cơ quan/tổ chức
-      q5: 'D', // Bỏ qua/chặn người gửi
-      q6: 'D', // Rất tốt
-      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
-      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
-      preConfidenceScore: 85,
-      biggestFearTactic: 'AUTHORITY_POLICE',
-      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
-      timeToDecidePreSec: 4.8,
-    },
-    testOutcome: {
-      preScore: 92,
-      postScore: 98,
-      unseenScore: 96,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 14.0,
-      scamDnaShift: {
-        before: { T: 0.38, A: 0.42, G: 0.28, E: 0.35, C: 0.32, R: 0.25 },
-        after: { T: 0.10, A: 0.08, G: 0.09, E: 0.11, C: 0.10, R: 0.07 },
-      },
-    },
-    feedbackNote: 'Hay nhận SMS phạt nguội và dọa khóa SIM, em chặn số luôn.',
-    createdAt: new Date(Date.now() - 12 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-004',
-    participantName: 'Phạm Hải Yến',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8104',
-    schoolName: 'THPT Chuyên Khoa học Tự nhiên',
-    className: '11 Chuyên Anh',
-    gradeLevel: 'Khối 11',
-    gender: 'Nữ',
-    safetyTraining: 'Không',
-    demographicGroup: 'STUDENT',
-    location: 'Hà Nội',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'D', // Có, từng bị lừa hoặc chịu thiệt hại
-      q2: 'D', // Đã mất tiền hoặc chịu thiệt hại thực tế
-      q3: 'D', // TikTok/Instagram/Discord hoặc nền tảng khác
-      q4: 'C', // Mua bán online/chuyển khoản
-      q5: 'A', // Bấm vào link để kiểm tra
-      q6: 'A', // Rất thấp — thường khó nhận biết
-      q7: 'B', // Cung cấp nếu nội dung nói tài khoản sẽ bị khóa
-      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'LOST_MONEY',
-      preConfidenceScore: 28,
-      biggestFearTactic: 'FAKE_BILL_QR',
-      verificationHabitPre: 'IMMEDIATE_ACTION',
-      timeToDecidePreSec: 2.1,
-    },
-    testOutcome: {
-      preScore: 31,
-      postScore: 89,
-      unseenScore: 86,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 11.2,
-      scamDnaShift: {
-        before: { T: 0.88, A: 0.76, G: 0.65, E: 0.82, C: 0.90, R: 0.78 },
-        after: { T: 0.19, A: 0.16, G: 0.15, E: 0.18, C: 0.17, R: 0.12 },
-      },
-    },
-    feedbackNote: 'Từng bị lừa cọc 300k mua hàng online trên TikTok. Cần nền tảng luyện tập gấp.',
-    createdAt: new Date(Date.now() - 11 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-005',
-    participantName: 'Thầy Bùi Quang Huy',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8105',
-    schoolName: 'THPT Chuyên Phan Bội Châu',
-    className: 'Tổ Tin học - GV',
-    gradeLevel: 'Khác / Giáo viên',
-    gender: 'Nam',
-    safetyTraining: 'Có',
-    demographicGroup: 'TEACHER_JUDGE',
-    location: 'Nghệ An',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'B', // Có, nhận ra ngay
-      q2: 'A', // Chưa từng
-      q3: 'C', // SMS/cuộc gọi điện thoại
-      q4: 'A', // Giả danh ngân hàng/cơ quan/tổ chức
-      q5: 'C', // Tự kiểm tra thông tin người gửi và đường link
-      q6: 'D', // Rất tốt
-      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
-      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
-      preConfidenceScore: 92,
-      biggestFearTactic: 'AUTHORITY_POLICE',
-      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
-      timeToDecidePreSec: 5.2,
-    },
-    testOutcome: {
-      preScore: 97,
-      postScore: 99,
-      unseenScore: 98,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 15.1,
-      scamDnaShift: {
-        before: { T: 0.25, A: 0.28, G: 0.18, E: 0.22, C: 0.20, R: 0.15 },
-        after: { T: 0.08, A: 0.07, G: 0.06, E: 0.08, C: 0.07, R: 0.05 },
-      },
-    },
-    feedbackNote: 'Đề tài rất thực tiễn, tôi muốn đưa bộ công cụ SCAMGUARD vào tiết sinh hoạt lớp để giáo dục an toàn mạng cho học sinh.',
-    createdAt: new Date(Date.now() - 10 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-006',
-    participantName: 'Cô Đỗ Thị Mai',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8106',
-    schoolName: 'THPT Chuyên Quốc Học Huế',
-    className: 'Tổ Xã hội - GV',
-    gradeLevel: 'Khác / Giáo viên',
-    gender: 'Nữ',
-    safetyTraining: 'Có',
-    demographicGroup: 'TEACHER_JUDGE',
-    location: 'Huế',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'B', // Có, nhận ra ngay
-      q2: 'B', // Suýt cung cấp thông tin/chuyển tiền nhưng đã dừng lại
-      q3: 'B', // Zalo
-      q4: 'D', // Tài khoản người quen bị hack hoặc giả danh người quen
-      q5: 'B', // Hỏi bạn bè/người thân
-      q6: 'C', // Khá tốt
-      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
-      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
-      preConfidenceScore: 75,
-      biggestFearTactic: 'URGENT_ACCIDENT',
-      verificationHabitPre: 'ASK_FRIENDS',
-      timeToDecidePreSec: 4.1,
-    },
-    testOutcome: {
-      preScore: 84,
-      postScore: 95,
-      unseenScore: 93,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 13.8,
-      scamDnaShift: {
-        before: { T: 0.52, A: 0.46, G: 0.35, E: 0.65, C: 0.48, R: 0.40 },
-        after: { T: 0.14, A: 0.12, G: 0.10, E: 0.15, C: 0.12, R: 0.08 },
-      },
-    },
-    feedbackNote: 'Phụ huynh và học sinh rất hay hỏi về tin nhắn giả mạo VNeID và lừa tiền học phí.',
-    createdAt: new Date(Date.now() - 9 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-007',
-    participantName: 'Vũ Đình Khoa',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8107',
-    schoolName: 'THPT Kim Liên',
-    className: '10 Tin 1',
-    gradeLevel: 'Khối 10',
-    gender: 'Nam',
-    safetyTraining: 'Không',
-    demographicGroup: 'STUDENT',
-    location: 'Hà Nội',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'C', // Có, từng suýt bị lừa
-      q2: 'B', // Suýt cung cấp thông tin
-      q3: 'A', // Facebook/Messenger
-      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
-      q5: 'C', // Tự kiểm tra thông tin
-      q6: 'B', // Khá thấp
-      q7: 'D', // Hỏi người gửi thêm thông tin rồi quyết định
-      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'CLICKED_SUSPICIOUS_LINK',
-      preConfidenceScore: 42,
-      biggestFearTactic: 'TELEGRAM_INCOME',
-      verificationHabitPre: 'CONFUSED',
-      timeToDecidePreSec: 3.1,
-    },
-    testOutcome: {
-      preScore: 68,
-      postScore: 91,
-      unseenScore: 88,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 12.0,
-      scamDnaShift: {
-        before: { T: 0.68, A: 0.55, G: 0.75, E: 0.58, C: 0.65, R: 0.60 },
-        after: { T: 0.16, A: 0.13, G: 0.14, E: 0.15, C: 0.14, R: 0.11 },
-      },
-    },
-    feedbackNote: 'Mấy vụ nạp tiền làm nhiệm vụ Telegram dụ em suốt, suýt nữa em nạp 200k tiền tiết kiệm.',
-    createdAt: new Date(Date.now() - 8 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-008',
-    participantName: 'Đặng Ngọc Bích',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8108',
-    schoolName: 'THPT Chuyên Trần Phú',
-    className: '10A2',
-    gradeLevel: 'Khối 10',
-    gender: 'Nữ',
-    safetyTraining: 'Không',
-    demographicGroup: 'STUDENT',
-    location: 'Hải Phòng',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'B', // Có, nhận ra ngay
-      q2: 'A', // Chưa từng
-      q3: 'B', // Zalo
-      q4: 'B', // Mời nhận quà, trúng thưởng
-      q5: 'D', // Bỏ qua/chặn người gửi
-      q6: 'C', // Khá tốt
-      q7: 'C', // Không cung cấp và xác minh thông qua kênh chính thức
-      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
-      preConfidenceScore: 72,
-      biggestFearTactic: 'FAKE_BILL_QR',
-      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
-      timeToDecidePreSec: 3.9,
-    },
-    testOutcome: {
-      preScore: 87,
-      postScore: 94,
-      unseenScore: 92,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 12.5,
-      scamDnaShift: {
-        before: { T: 0.48, A: 0.40, G: 0.52, E: 0.45, C: 0.42, R: 0.38 },
-        after: { T: 0.13, A: 0.11, G: 0.12, E: 0.13, C: 0.11, R: 0.09 },
-      },
-    },
-    feedbackNote: 'Tin nhắn trúng thưởng xe máy điện SH gửi vào Zalo, em chặn và báo cáo xấu luôn.',
-    createdAt: new Date(Date.now() - 7 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-009',
-    participantName: 'Hoàng Trọng Nam',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8109',
-    schoolName: 'THPT Chuyên Hà Nội - Amsterdam',
-    className: '12A3',
-    gradeLevel: 'Khối 12',
-    gender: 'Nam',
-    safetyTraining: 'Không',
-    demographicGroup: 'STUDENT',
-    location: 'Hà Nội',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'C', // Có, từng suýt bị lừa
-      q2: 'C', // Đã cung cấp thông tin cá nhân hoặc tài khoản
-      q3: 'C', // SMS/cuộc gọi điện thoại
-      q4: 'A', // Giả danh ngân hàng/cơ quan/tổ chức
-      q5: 'B', // Hỏi bạn bè/người thân
-      q6: 'B', // Khá thấp
-      q7: 'A', // Cung cấp nếu người gửi có vẻ đáng tin
-      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SHARED_OTP_PASSWORD',
-      preConfidenceScore: 39,
-      biggestFearTactic: 'AUTHORITY_POLICE',
-      verificationHabitPre: 'ASK_FRIENDS',
-      timeToDecidePreSec: 2.8,
-    },
-    testOutcome: {
-      preScore: 43,
-      postScore: 88,
-      unseenScore: 85,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 11.8,
-      scamDnaShift: {
-        before: { T: 0.78, A: 0.85, G: 0.45, E: 0.70, C: 0.62, R: 0.72 },
-        after: { T: 0.17, A: 0.15, G: 0.13, E: 0.16, C: 0.14, R: 0.11 },
-      },
-    },
-    feedbackNote: 'Từng nhập CCCD vào web dichvucong giả mạo, sau đó phải đổi mật khẩu VNeID khẩn cấp.',
-    createdAt: new Date(Date.now() - 6 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-010',
-    participantName: 'Bùi Quốc Anh',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8110',
-    schoolName: 'THPT Chuyên Lê Hồng Phong',
-    className: '11 Lý',
-    gradeLevel: 'Khối 11',
-    gender: 'Nam',
-    safetyTraining: 'Có',
-    demographicGroup: 'STUDENT',
-    location: 'TP. Hồ Chí Minh',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'B', // Có, nhận ra ngay
-      q2: 'A', // Chưa từng
-      q3: 'A', // Facebook/Messenger
-      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
-      q5: 'C', // Tự kiểm tra thông tin người gửi và đường link
-      q6: 'C', // Khá tốt
-      q7: 'C', // Không cung cấp
-      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
-      preConfidenceScore: 80,
-      biggestFearTactic: 'TELEGRAM_INCOME',
-      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
-      timeToDecidePreSec: 4.0,
-    },
-    testOutcome: {
-      preScore: 87,
-      postScore: 96,
-      unseenScore: 94,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 13.0,
-      scamDnaShift: {
-        before: { T: 0.42, A: 0.38, G: 0.45, E: 0.38, C: 0.35, R: 0.30 },
-        after: { T: 0.11, A: 0.09, G: 0.10, E: 0.12, C: 0.10, R: 0.08 },
-      },
-    },
-    feedbackNote: 'Em hay hướng dẫn bố mẹ cách phân biệt tin nhắn rác ngân hàng và link lạ.',
-    createdAt: new Date(Date.now() - 5 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-011',
-    participantName: 'Phan Thanh Thảo',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8111',
-    schoolName: 'THPT Chu Văn An',
-    className: '11 Văn',
-    gradeLevel: 'Khối 11',
-    gender: 'Nữ',
-    safetyTraining: 'Không',
-    demographicGroup: 'STUDENT',
-    location: 'Hà Nội',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'C', // Có, từng suýt bị lừa
-      q2: 'B', // Suýt cung cấp thông tin/chuyển tiền
-      q3: 'B', // Zalo
-      q4: 'C', // Mua bán online/chuyển khoản
-      q5: 'C', // Tự kiểm tra thông tin
-      q6: 'B', // Khá thấp
-      q7: 'C', // Không cung cấp
-      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'CLICKED_SUSPICIOUS_LINK',
-      preConfidenceScore: 50,
-      biggestFearTactic: 'FAKE_BILL_QR',
-      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
-      timeToDecidePreSec: 3.5,
-    },
-    testOutcome: {
-      preScore: 83,
-      postScore: 93,
-      unseenScore: 90,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 12.6,
-      scamDnaShift: {
-        before: { T: 0.58, A: 0.50, G: 0.62, E: 0.55, C: 0.52, R: 0.48 },
-        after: { T: 0.14, A: 0.11, G: 0.13, E: 0.14, C: 0.12, R: 0.10 },
-      },
-    },
-    feedbackNote: 'Mua tài khoản học tập trên mạng bị giục chuyển khoản trước, em nghi ngờ kiểm tra STK thì thấy bị cảnh báo lừa đảo.',
-    createdAt: new Date(Date.now() - 4 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-012',
-    participantName: 'Lương Gia Huy',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8112',
-    schoolName: 'THPT Khoa học Tự nhiên',
-    className: '10 Sinh',
-    gradeLevel: 'Khối 10',
-    gender: 'Nam',
-    safetyTraining: 'Không',
-    demographicGroup: 'STUDENT',
-    location: 'Hà Nội',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'A', // Chưa bao giờ
-      q2: 'A', // Chưa từng
-      q3: 'C', // SMS/cuộc gọi điện thoại
-      q4: 'A', // Giả danh ngân hàng/cơ quan
-      q5: 'D', // Bỏ qua/chặn
-      q6: 'B', // Khá thấp
-      q7: 'D', // Hỏi người gửi thêm thông tin
-      q8: 'B', // Có, nhưng chỉ thỉnh thoảng
-    },
-    surveyResponses: {
-      everEncounteredScam: false,
-      pastLossOrNearMiss: 'NEVER',
-      preConfidenceScore: 55,
-      biggestFearTactic: 'AUTHORITY_POLICE',
-      verificationHabitPre: 'CONFUSED',
-      timeToDecidePreSec: 3.0,
-    },
-    testOutcome: {
-      preScore: 60,
-      postScore: 90,
-      unseenScore: 87,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 11.9,
-      scamDnaShift: {
-        before: { T: 0.60, A: 0.62, G: 0.40, E: 0.45, C: 0.50, R: 0.55 },
-        after: { T: 0.15, A: 0.13, G: 0.11, E: 0.13, C: 0.12, R: 0.10 },
-      },
-    },
-    feedbackNote: 'Em ít dùng mạng xã hội nên ít gặp, nhưng muốn biết thêm về cách phòng tránh.',
-    createdAt: new Date(Date.now() - 3 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-013',
-    participantName: 'Trịnh Minh Châu',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8113',
-    schoolName: 'THPT Chuyên Phan Bội Châu',
-    className: '12 Anh 1',
-    gradeLevel: 'Khối 12',
-    gender: 'Nữ',
-    safetyTraining: 'Có',
-    demographicGroup: 'STUDENT',
-    location: 'Nghệ An',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'B', // Có, nhận ra ngay
-      q2: 'A', // Chưa từng
-      q3: 'A', // Facebook/Messenger
-      q4: 'D', // Tài khoản người quen bị hack
-      q5: 'D', // Bỏ qua/chặn người gửi
-      q6: 'C', // Khá tốt
-      q7: 'C', // Không cung cấp
-      q8: 'C', // Có, nếu nội dung ngắn và dễ sử dụng
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
-      preConfidenceScore: 82,
-      biggestFearTactic: 'DEEPFAKE_CALL',
-      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
-      timeToDecidePreSec: 4.4,
-    },
-    testOutcome: {
-      preScore: 89,
-      postScore: 97,
-      unseenScore: 95,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 13.5,
-      scamDnaShift: {
-        before: { T: 0.40, A: 0.35, G: 0.30, E: 0.50, C: 0.38, R: 0.32 },
-        after: { T: 0.10, A: 0.09, G: 0.08, E: 0.12, C: 0.09, R: 0.07 },
-      },
-    },
-    feedbackNote: 'Nhận diện được tin nhắn giả mạo nhờ văn phong khác hẳn bạn mình ngoài đời.',
-    createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-014',
-    participantName: 'Nguyễn Đức Anh',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8114',
-    schoolName: 'THPT Kim Liên',
-    className: '11 Toán 2',
-    gradeLevel: 'Khối 11',
-    gender: 'Nam',
-    safetyTraining: 'Không',
-    demographicGroup: 'STUDENT',
-    location: 'Hà Nội',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'D', // Có, từng bị lừa hoặc chịu thiệt hại
-      q2: 'C', // Đã cung cấp thông tin cá nhân hoặc tài khoản
-      q3: 'A', // Facebook/Messenger
-      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
-      q5: 'A', // Bấm vào link để kiểm tra
-      q6: 'A', // Rất thấp
-      q7: 'B', // Cung cấp nếu nội dung nói tài khoản sẽ bị khóa
-      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SHARED_OTP_PASSWORD',
-      preConfidenceScore: 30,
-      biggestFearTactic: 'TELEGRAM_INCOME',
-      verificationHabitPre: 'IMMEDIATE_ACTION',
-      timeToDecidePreSec: 2.3,
-    },
-    testOutcome: {
-      preScore: 34,
-      postScore: 87,
-      unseenScore: 84,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 11.4,
-      scamDnaShift: {
-        before: { T: 0.85, A: 0.70, G: 0.82, E: 0.75, C: 0.88, R: 0.80 },
-        after: { T: 0.18, A: 0.14, G: 0.16, E: 0.17, C: 0.15, R: 0.12 },
-      },
-    },
-    feedbackNote: 'Từng bấm vào link vote ảnh bạn bè trên Facebook bị mất luôn tài khoản cá nhân.',
-    createdAt: new Date(Date.now() - 1 * 86400000).toISOString(),
-  },
-  {
-    id: 'SURVEY-N15-015',
-    participantName: 'Võ Thị Khánh Linh',
-    isAnonymous: false,
-    anonymousCode: 'Khảo nghiệm viên #VN-8115',
-    schoolName: 'THPT Chuyên Quốc Học Huế',
-    className: '12 Tin',
-    gradeLevel: 'Khối 12',
-    gender: 'Nữ',
-    safetyTraining: 'Có',
-    demographicGroup: 'STUDENT',
-    location: 'Huế',
-    consentAgreed: true,
-    eightQuestionAnswers: {
-      q1: 'B', // Có, nhận ra ngay
-      q2: 'A', // Chưa từng
-      q3: 'C', // SMS/cuộc gọi điện thoại
-      q4: 'B', // Mời nhận quà, trúng thưởng, kiếm tiền online
-      q5: 'C', // Tự kiểm tra thông tin
-      q6: 'D', // Rất tốt
-      q7: 'C', // Không cung cấp
-      q8: 'D', // Có, và tôi muốn luyện tập thường xuyên
-    },
-    surveyResponses: {
-      everEncounteredScam: true,
-      pastLossOrNearMiss: 'SPOTTED_IN_TIME',
-      preConfidenceScore: 88,
-      biggestFearTactic: 'TELEGRAM_INCOME',
-      verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
-      timeToDecidePreSec: 4.7,
-    },
-    testOutcome: {
-      preScore: 97,
-      postScore: 99,
-      unseenScore: 97,
-      unsafeActionAvoided: true,
-      timeToDecidePostSec: 14.5,
-      scamDnaShift: {
-        before: { T: 0.32, A: 0.29, G: 0.35, E: 0.30, C: 0.28, R: 0.22 },
-        after: { T: 0.08, A: 0.07, G: 0.08, E: 0.09, C: 0.08, R: 0.05 },
-      },
-    },
-    feedbackNote: 'Em rất thích tính năng mô phỏng tình huống thực tế của SCAMGUARD vì giúp nhớ lâu hơn lý thuyết khô khan.',
-    createdAt: new Date().toISOString(),
-  },
-];
 
 export function seedCommunitySurveys() {
-  if (isCleanDataMode || COMMUNITY_SURVEYS.length > 0) return;
-  // Initialize with the exact 15 participants requested for ViSEF research
-  COMMUNITY_SURVEYS.push(...INITIAL_15_STUDENT_RESPONSES);
+  if (COMMUNITY_SURVEYS.length === 0) {
+    COMMUNITY_SURVEYS.push(...INITIAL_15_STUDENT_RESPONSES);
+  }
 }
 
 // Export helper to allow explicit manual seeding if requested

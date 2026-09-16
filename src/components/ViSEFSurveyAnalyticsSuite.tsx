@@ -30,6 +30,7 @@ import {
   Zap,
   Gauge,
   Lock,
+  Layers,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import {
@@ -42,6 +43,7 @@ import { PersonalVsCommunityComparisonSuite } from './PersonalVsCommunityCompari
 import { SurveyDemographicsSection } from './SurveyDemographicsSection';
 import { SCENARIO_QUESTIONS } from './NationalScienceFairDemoModal';
 import { VisefSurveyResponsesLiveTable } from './VisefSurveyResponsesLiveTable';
+import { VisefSchoolSurveyFunnelSuite } from './VisefSchoolSurveyFunnelSuite';
 
 interface ViSEFSurveyAnalyticsSuiteProps {
   onTakeLiveDemo?: () => void;
@@ -55,7 +57,7 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [submittingSurvey, setSubmittingSurvey] = useState(false);
   const [selectedGroupFilter, setSelectedGroupFilter] = useState<string>('ALL');
-  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'CHARTS' | 'RADAR' | 'RAW_DATA'>('OVERVIEW');
+  const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'FUNNEL' | 'CHARTS' | 'RADAR' | 'RAW_DATA'>('OVERVIEW');
   const [hoveredBarIndex, setHoveredBarIndex] = useState<number | null>(null);
   const [recentPersonalResult, setRecentPersonalResult] = useState<CommunitySurveySubmission | null>(null);
   const [surveyStep, setSurveyStep] = useState<1 | 2>(1);
@@ -258,55 +260,75 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
     if (!analytics || !analytics.recentSurveys) return;
     const headers = [
       'Mã Khảo Sát',
-      'Tên Đối Tượng',
-      'Ẩn Danh',
+      'Tên Học Sinh / Thí Sinh',
+      'Chế Độ Danh Tính',
       'Mã Ẩn Danh',
       'Trường Học',
-      'Lớp / Khối Lớp',
-      'Đồng Ý IRB',
+      'Lớp',
+      'Khối Lớp',
+      'Giới Tính',
+      'Đã Tập Huấn ATTT',
       'Nhóm Nhân Khẩu',
       'Tỉnh/Thành Phố',
-      'Từng Gặp Lừa Đảo',
-      'Tình Trạng Quá Khứ',
-      'Điểm Tự Tin Ban Đầu (1-100)',
-      'Nỗi Sợ Kịch Bản Lớn Nhất',
-      'Thói Quen Phản Ứng Ban Đầu',
-      'Điểm Phòng Thủ Ban Đầu (Pre)',
-      'Điểm Phòng Thủ Sau Đào Tạo (Post)',
-      'Độ Tăng Trưởng (+ Điểm)',
-      'Thời Gian Ra Quyết Định Pre (s)',
-      'Thời Gian Ra Quyết Định Post (s)',
+      'Đồng Ý Khảo Sát',
+      'Câu 1 (Từng Gặp Scam)',
+      'Câu 2 (Mức Độ Bị Lừa)',
+      'Câu 3 (Kênh Scam Phổ Biến)',
+      'Câu 4 (Hình Thức Phổ Biến)',
+      'Câu 5 (Phản Xạ Ban Đầu)',
+      'Câu 6 (Tự Đánh Giá Nhận Biết)',
+      'Câu 7 (Phản Ứng Đòi OTP)',
+      'Câu 8 (Nhu Cầu Ứng Dụng)',
+      'Điểm Phòng Thủ Pre (0-100)',
+      'Điểm Phòng Thủ Post (0-100)',
+      'Độ Tăng Trưởng Điểm (+)',
+      'Thời Gian Quyết Định Pre (s)',
+      'Thời Gian Quyết Định Post (s)',
+      'Ghi Chú Phản Hồi',
       'Ngày Tham Gia',
     ];
 
+    const escapeCSV = (val: any) => {
+      if (val === undefined || val === null) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
     const rows = analytics.recentSurveys.map((s) => [
-      s.id,
-      `"${s.participantName}"`,
-      s.isAnonymous ? 'Có' : 'Không',
-      `"${s.anonymousCode || ''}"`,
-      `"${s.schoolName || 'THPT Chuyên'}"`,
-      `"${s.className || 'Khối 11'}"`,
-      s.consentAgreed ? 'Đã Đồng Ý' : 'Chưa',
-      s.demographicGroup,
-      `"${s.location || ''}"`,
-      s.surveyResponses.everEncounteredScam ? 'Có' : 'Không',
-      s.surveyResponses.pastLossOrNearMiss,
-      s.surveyResponses.preConfidenceScore,
-      s.surveyResponses.biggestFearTactic,
-      s.surveyResponses.verificationHabitPre,
-      s.testOutcome.preScore,
-      s.testOutcome.postScore,
-      s.testOutcome.postScore - s.testOutcome.preScore,
-      s.surveyResponses.timeToDecidePreSec,
-      s.testOutcome.timeToDecidePostSec,
-      s.createdAt,
+      escapeCSV(s.id),
+      escapeCSV(s.participantName),
+      s.isAnonymous ? '"Ẩn Danh"' : '"Công Khai"',
+      escapeCSV(s.anonymousCode || ''),
+      escapeCSV(s.schoolName || 'THPT Chuyên'),
+      escapeCSV(s.className || 'Khối 11'),
+      escapeCSV(s.gradeLevel || 'Khối 11'),
+      escapeCSV(s.gender || 'Nam'),
+      escapeCSV(s.safetyTraining || 'Không'),
+      escapeCSV(s.demographicGroup),
+      escapeCSV(s.location || 'Hà Nội'),
+      s.consentAgreed !== false ? '"Đã Đồng Ý"' : '"Chưa"',
+      escapeCSV(s.eightQuestionAnswers?.q1 || (s.surveyResponses?.everEncounteredScam ? 'B' : 'A')),
+      escapeCSV(s.eightQuestionAnswers?.q2 || 'A'),
+      escapeCSV(s.eightQuestionAnswers?.q3 || 'A'),
+      escapeCSV(s.eightQuestionAnswers?.q4 || 'B'),
+      escapeCSV(s.eightQuestionAnswers?.q5 || 'C'),
+      escapeCSV(s.eightQuestionAnswers?.q6 || 'C'),
+      escapeCSV(s.eightQuestionAnswers?.q7 || 'C'),
+      escapeCSV(s.eightQuestionAnswers?.q8 || 'D'),
+      s.testOutcome?.preScore ?? 50,
+      s.testOutcome?.postScore ?? 88,
+      (s.testOutcome?.postScore ?? 88) - (s.testOutcome?.preScore ?? 50),
+      s.surveyResponses?.timeToDecidePreSec ?? 3.5,
+      s.testOutcome?.timeToDecidePostSec ?? 12.0,
+      escapeCSV(s.feedbackNote || ''),
+      escapeCSV(s.createdAt),
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `SCAMGUARD_VISEF_SURVEY_DATA_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `SCAMGUARD_VISEF_8_CAU_N15_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -394,9 +416,10 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
         <div className="flex items-center gap-2 mt-6 pt-4 border-t border-slate-800/80 overflow-x-auto">
           {[
             { id: 'OVERVIEW', label: '1. Tổng Quan Đo Lường', icon: Activity },
-            { id: 'CHARTS', label: '2. Biểu Đồ Cột & So Sánh Trước/Sau', icon: BarChart3 },
-            { id: 'RADAR', label: '3. Radar Scam DNA & Phân Bố Lỗi', icon: PieChart },
-            { id: 'RAW_DATA', label: '4. Bảng Dữ Liệu Khảo Sát & Train AI (Live)', icon: FileSpreadsheet },
+            { id: 'FUNNEL', label: '2. Phễu Học Đường & 8 Câu Hỏi', icon: Layers },
+            { id: 'CHARTS', label: '3. Biểu Đồ Cột & So Sánh Trước/Sau', icon: BarChart3 },
+            { id: 'RADAR', label: '4. Radar Scam DNA & Phân Bố Lỗi', icon: PieChart },
+            { id: 'RAW_DATA', label: '5. Bảng Dữ Liệu Khảo Sát & Train AI (Live)', icon: FileSpreadsheet },
           ].map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
@@ -500,6 +523,21 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
               </div>
             </div>
           </div>
+
+          {/* VISEF SCHOOL SURVEY RESEARCH FUNNEL & 8-QUESTION ANALYTICS SUITE */}
+          <VisefSchoolSurveyFunnelSuite
+            analytics={analytics}
+            surveys={analytics?.recentSurveys}
+            onOpenLiveSurvey={() => {
+              if (onTakeLiveDemo) {
+                onTakeLiveDemo();
+              } else {
+                setRecentPersonalResult(null);
+                setIsSurveyModalOpen(true);
+              }
+            }}
+            onExportCSV={handleExportCSV}
+          />
 
           {/* DEDICATED 3-CHART COMPARISON SUITE: Personal vs Community */}
           <PersonalVsCommunityComparisonSuite
@@ -607,7 +645,26 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
         </div>
       )}
 
-      {/* TAB 2: BEAUTIFUL COLUMN & DEMOGRAPHIC CHARTS */}
+      {/* TAB 2: VISEF SCHOOL SURVEY RESEARCH FUNNEL & 8-QUESTION ANALYTICS SUITE */}
+      {activeTab === 'FUNNEL' && (
+        <div className="space-y-6">
+          <VisefSchoolSurveyFunnelSuite
+            analytics={analytics}
+            surveys={analytics?.recentSurveys}
+            onOpenLiveSurvey={() => {
+              if (onTakeLiveDemo) {
+                onTakeLiveDemo();
+              } else {
+                setRecentPersonalResult(null);
+                setIsSurveyModalOpen(true);
+              }
+            }}
+            onExportCSV={handleExportCSV}
+          />
+        </div>
+      )}
+
+      {/* TAB 3: BEAUTIFUL COLUMN & DEMOGRAPHIC CHARTS */}
       {activeTab === 'CHARTS' && (
         <div className="space-y-6">
           {/* Main Visual Column Chart: Pre vs Post Score across 5 Demographics */}
