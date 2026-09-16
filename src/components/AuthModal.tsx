@@ -20,14 +20,6 @@ import {
   RefreshCw,
   Award,
 } from 'lucide-react';
-import {
-  loginWithFirebase,
-  registerWithFirebase,
-  signInWithGoogleFirebase,
-  signInWithGithubFirebase,
-  signInWithFacebookFirebase,
-  logoutFromFirebase,
-} from '../services/firebaseAuthService';
 import { playSuccessChime, playAlertWarning } from '../utils/audioEffects';
 import { handleAvatarError } from '../utils/avatarFallback';
 
@@ -126,25 +118,28 @@ export function AuthModal({
     setLoading(true);
 
     try {
-      // Use Firebase exclusively for authentication
-      // If identifier is a username (no @), convert to synthetic email
-      let emailToUse = loginIdentifier.trim();
-      if (!emailToUse.includes('@')) {
-        emailToUse = `${loginIdentifier.toLowerCase().replace(/[^a-z0-9]/g, '')}@scamguard.user`;
-      }
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usernameOrEmail: loginIdentifier.trim(),
+          password: loginPassword,
+        }),
+      });
 
-      const result = await loginWithFirebase(emailToUse, loginPassword);
-      if (result.success && result.user) {
-        setSuccessMsg(`Chào mừng trở lại, ${result.user.name}!`);
-        localStorage.setItem('scamguard_token', result.user.token);
+      const data = await res.json();
+      if (res.ok && data.success && data.user) {
+        setSuccessMsg(`Chào mừng trở lại, ${data.user.name}!`);
+        localStorage.setItem('scamguard_token', data.user.token);
+        localStorage.setItem('scamguard_user_id', data.user.id);
         playSuccessChime();
         setTimeout(() => {
-          onLoginSuccess(result.user!);
+          onLoginSuccess(data.user);
           onClose();
         }, 600);
       } else {
         playAlertWarning();
-        setErrorMsg(result.error || 'Email hoặc mật khẩu không chính xác.');
+        setErrorMsg(data.error || 'Tên đăng nhập hoặc mật khẩu không chính xác.');
       }
     } catch (err: any) {
       playAlertWarning();
@@ -161,31 +156,38 @@ export function AuthModal({
     setLoading(true);
 
     try {
-      const emailToUse = regEmail.trim() || `${regUsername.toLowerCase().replace(/[^a-z0-9]/g, '')}@scamguard.user`;
-      const result = await registerWithFirebase({
-        name: regName,
-        username: regUsername,
-        email: emailToUse,
-        password: regPassword,
-        mode: regMode,
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: regName.trim(),
+          username: regUsername.trim(),
+          email: regEmail.trim() || undefined,
+          password: regPassword,
+          mode: regMode,
+        }),
       });
 
-      if (result.success && result.user) {
-        result.user.avatarUrl = selectedAvatar;
-        setSuccessMsg(`Tạo tài khoản thành công! Xin chào ${result.user.name}.`);
-        localStorage.setItem('scamguard_token', result.user.token);
+      const data = await res.json();
+      if (res.ok && data.success && data.user) {
+        if (selectedAvatar) {
+          data.user.avatarUrl = selectedAvatar;
+        }
+        setSuccessMsg(`Tạo tài khoản thành công! Xin chào ${data.user.name}.`);
+        localStorage.setItem('scamguard_token', data.user.token);
+        localStorage.setItem('scamguard_user_id', data.user.id);
         playSuccessChime();
         setTimeout(() => {
-          onLoginSuccess(result.user!);
+          onLoginSuccess(data.user);
           onClose();
         }, 700);
       } else {
         playAlertWarning();
-        setErrorMsg(result.error || 'Đăng ký không thành công.');
+        setErrorMsg(data.error || 'Đăng ký tài khoản không thành công.');
       }
     } catch (err: any) {
       playAlertWarning();
-      setErrorMsg('Lỗi kết nối khi đăng ký tài khoản.');
+      setErrorMsg('Lỗi kết nối khi đăng ký tài khoản vào máy chủ.');
     } finally {
       setLoading(false);
     }
@@ -208,26 +210,35 @@ export function AuthModal({
     setLoading(true);
 
     try {
-      let result;
-      if (provider === 'google') {
-        result = await signInWithGoogleFirebase(regMode);
-      } else if (provider === 'github') {
-        result = await signInWithGithubFirebase(regMode);
-      } else {
-        result = await signInWithFacebookFirebase(regMode);
-      }
+      const providerNames: Record<string, string> = {
+        google: 'Google',
+        facebook: 'Facebook',
+        github: 'GitHub',
+      };
 
-      if (result.success && result.user) {
+      const res = await fetch('/api/auth/social', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider,
+          name: `Vệ Binh ${providerNames[provider]}`,
+          mode: regMode,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.user) {
         setSuccessMsg(`Đăng nhập thành công qua ${provider.toUpperCase()}!`);
-        localStorage.setItem('scamguard_token', result.user.token);
+        localStorage.setItem('scamguard_token', data.user.token);
+        localStorage.setItem('scamguard_user_id', data.user.id);
         playSuccessChime();
         setTimeout(() => {
-          onLoginSuccess(result.user!);
+          onLoginSuccess(data.user);
           onClose();
         }, 600);
       } else {
         playAlertWarning();
-        setErrorMsg(result.error || 'Đăng nhập mạng xã hội không thành công.');
+        setErrorMsg(data.error || 'Đăng nhập mạng xã hội không thành công.');
       }
     } catch (err: any) {
       playAlertWarning();

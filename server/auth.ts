@@ -1,7 +1,21 @@
 import { UserAccount, UserProfile, ExperienceMode, TrustedContact } from '../src/types';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
-// In-memory user database
+const DATA_DIR = path.join(process.cwd(), 'data');
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
+
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) {
+  try {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  } catch (e) {
+    console.warn('Could not create data dir:', e);
+  }
+}
+
+// User database
 const usersStore = new Map<string, {
   account: UserAccount;
   passwordHash?: string;
@@ -9,6 +23,36 @@ const usersStore = new Map<string, {
 
 // Sessions map: token -> userId
 const sessionsStore = new Map<string, string>();
+
+function saveUsersToDisk() {
+  try {
+    const list: Array<{ id: string; account: UserAccount; passwordHash?: string }> = [];
+    for (const [id, entry] of usersStore.entries()) {
+      list.push({ id, account: entry.account, passwordHash: entry.passwordHash });
+    }
+    fs.writeFileSync(USERS_FILE, JSON.stringify(list, null, 2), 'utf-8');
+  } catch (err) {
+    console.warn('[Auth] Failed to persist users to disk:', err);
+  }
+}
+
+function loadUsersFromDisk() {
+  try {
+    if (fs.existsSync(USERS_FILE)) {
+      const raw = fs.readFileSync(USERS_FILE, 'utf-8');
+      const list: Array<{ id: string; account: UserAccount; passwordHash?: string }> = JSON.parse(raw);
+      for (const item of list) {
+        usersStore.set(item.id, { account: item.account, passwordHash: item.passwordHash });
+        if (item.account.token) {
+          sessionsStore.set(item.account.token, item.id);
+        }
+      }
+      console.log(`🛡️ [Auth] Loaded ${list.length} saved user accounts from disk.`);
+    }
+  } catch (err) {
+    console.warn('[Auth] Failed to load users from disk:', err);
+  }
+}
 
 function hashPassword(password: string): string {
   return crypto.createHash('sha256').update(`scamguard_salt_${password}`).digest('hex');
@@ -179,6 +223,9 @@ DEMO_PRESET_USERS.forEach((preset) => {
   });
 });
 
+// Load previously registered and saved users from persistent disk
+loadUsersFromDisk();
+
 /**
  * Register a new user with username and password
  */
@@ -249,6 +296,8 @@ export function registerUser(params: {
     account,
     passwordHash: params.password ? hashPassword(params.password) : undefined,
   });
+
+  saveUsersToDisk();
 
   return { success: true, user: account };
 }
@@ -370,6 +419,7 @@ export function socialLogin(params: {
   };
 
   usersStore.set(userId, { account });
+  saveUsersToDisk();
   return { success: true, user: account };
 }
 
@@ -411,6 +461,8 @@ export function updateUserProfile(userId: string, updates: Partial<UserProfile>)
   if (updates.avatarUrl) {
     entry.account.avatarUrl = updates.avatarUrl;
   }
+
+  saveUsersToDisk();
 
   return entry.account;
 }
