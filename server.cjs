@@ -23,7 +23,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 
 // server.ts
 var import_express = __toESM(require("express"), 1);
-var import_path = __toESM(require("path"), 1);
+var import_path2 = __toESM(require("path"), 1);
 var import_vite = require("vite");
 var import_dotenv = __toESM(require("dotenv"), 1);
 var import_helmet = __toESM(require("helmet"), 1);
@@ -4963,8 +4963,47 @@ var QUICK_DRILLS = [
 
 // server/auth.ts
 var import_crypto = __toESM(require("crypto"), 1);
+var import_fs = __toESM(require("fs"), 1);
+var import_path = __toESM(require("path"), 1);
+var DATA_DIR = import_path.default.join(process.cwd(), "data");
+var USERS_FILE = import_path.default.join(DATA_DIR, "users.json");
+if (!import_fs.default.existsSync(DATA_DIR)) {
+  try {
+    import_fs.default.mkdirSync(DATA_DIR, { recursive: true });
+  } catch (e) {
+    console.warn("Could not create data dir:", e);
+  }
+}
 var usersStore = /* @__PURE__ */ new Map();
 var sessionsStore = /* @__PURE__ */ new Map();
+function saveUsersToDisk() {
+  try {
+    const list = [];
+    for (const [id, entry] of usersStore.entries()) {
+      list.push({ id, account: entry.account, passwordHash: entry.passwordHash });
+    }
+    import_fs.default.writeFileSync(USERS_FILE, JSON.stringify(list, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[Auth] Failed to persist users to disk:", err);
+  }
+}
+function loadUsersFromDisk() {
+  try {
+    if (import_fs.default.existsSync(USERS_FILE)) {
+      const raw = import_fs.default.readFileSync(USERS_FILE, "utf-8");
+      const list = JSON.parse(raw);
+      for (const item of list) {
+        usersStore.set(item.id, { account: item.account, passwordHash: item.passwordHash });
+        if (item.account.token) {
+          sessionsStore.set(item.account.token, item.id);
+        }
+      }
+      console.log(`\u{1F6E1}\uFE0F [Auth] Loaded ${list.length} saved user accounts from disk.`);
+    }
+  } catch (err) {
+    console.warn("[Auth] Failed to load users from disk:", err);
+  }
+}
 function hashPassword(password) {
   return import_crypto.default.createHash("sha256").update(`scamguard_salt_${password}`).digest("hex");
 }
@@ -5113,6 +5152,7 @@ DEMO_PRESET_USERS.forEach((preset) => {
     // Default password for demo if manually tested
   });
 });
+loadUsersFromDisk();
 function registerUser(params) {
   const cleanUsername = (params.username || "").trim().toLowerCase();
   const cleanName = (params.name || "").trim();
@@ -5167,6 +5207,7 @@ function registerUser(params) {
     account,
     passwordHash: params.password ? hashPassword(params.password) : void 0
   });
+  saveUsersToDisk();
   return { success: true, user: account };
 }
 function loginUser(params) {
@@ -5249,6 +5290,7 @@ function socialLogin(params) {
     createdAt: (/* @__PURE__ */ new Date()).toISOString()
   };
   usersStore.set(userId, { account });
+  saveUsersToDisk();
   return { success: true, user: account };
 }
 function getUserByTokenOrId(identifier) {
@@ -5275,6 +5317,7 @@ function updateUserProfile(userId, updates) {
   if (updates.avatarUrl) {
     entry.account.avatarUrl = updates.avatarUrl;
   }
+  saveUsersToDisk();
   return entry.account;
 }
 function resetUserAccountData(userId) {
@@ -6353,10 +6396,10 @@ Tr\u1EA3 v\u1EC1 JSON:
     });
     app.use(vite.middlewares);
   } else {
-    const distPath = import_path.default.join(process.cwd(), "dist");
+    const distPath = import_path2.default.join(process.cwd(), "dist");
     app.use(import_express.default.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile(import_path.default.join(distPath, "index.html"));
+      res.sendFile(import_path2.default.join(distPath, "index.html"));
     });
   }
   app.listen(PORT, "0.0.0.0", () => {
