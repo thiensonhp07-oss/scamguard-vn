@@ -47,6 +47,7 @@ interface NationalScienceFairDemoModalProps {
   onClose: () => void;
   onNavigateToResearch?: () => void;
   onNavigateToMainUI?: () => void;
+  onNavigateToSimulator?: () => void;
 }
 
 const VIETNAM_PROVINCES = [
@@ -121,41 +122,41 @@ export const SCENARIO_QUESTIONS = [
     key: 'q1' as const,
     number: 1,
     trapIndex: 1,
-    title: '1. Bạn đã từng gặp tin nhắn giả mạo Cục Dịch Vụ Công / Công An dọa khóa CCCD, định danh VNeID chưa?',
+    title: '1. Bạn đã từng gặp hoặc bị lừa đảo qua tin nhắn / cuộc gọi giả mạo Dịch Vụ Công, Công An dọa khóa CCCD và VNeID chưa?',
     badge: 'Mạo Danh Chính Quyền & Dọa Nạt',
     badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     icon: '💬',
     source: 'Kịch bản thực tế: SMS Brandname DICHVUCONG hoặc cuộc gọi dọa khóa CCCD / VNeID cấp 2',
-    content: 'Tin nhắn hoặc cuộc gọi: "Hồ sơ CCCD/VNeID của bạn bị lỗi đồng bộ dữ liệu dân cư quốc gia, tài khoản ngân hàng sẽ bị phong tỏa lúc 24h00. Bấm vào link dichvucong-gov-vn.cc để cập nhật ngay hoặc gọi hotline gấp".',
+    content: 'Tin nhắn SMS Brandname hoặc cuộc gọi dọa: "Hồ sơ định danh VNeID của bạn bị lỗi đồng bộ dữ liệu dân cư, tài khoản ngân hàng sẽ bị phong tỏa lúc 24h00. Bấm vào link dichvucong-gov-vn.cc để cập nhật ngay hoặc gọi hotline khẩn cấp".',
     options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi và gia đình chưa từng nhận được tin nhắn hay cuộc gọi kiểu này.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi nhận ra ngay dấu hiệu lừa đảo và chủ động chặn số/xóa tin nhắn.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Tháng nào cũng bị nhắn/gọi làm phiền, nhưng tôi quá quen nên bỏ qua.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Bị lừa thật — Tôi từng hoang mang bấm thử vào link lạ hoặc từng làm theo hướng dẫn.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi và người thân chưa từng nhận được tin nhắn hay cuộc gọi dọa khóa CCCD kiểu này.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Có gặp nhưng tôi nhận ra ngay dấu hiệu lừa đảo và không làm theo.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Liên tục nhận được tin nhắn/cuộc gọi làm phiền nhưng tôi cảnh giác bỏ qua.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Tôi hoặc người thân từng lo sợ bấm link, làm theo hướng dẫn hoặc từng bị lừa mất tiền.' },
     ],
   },
   {
     key: 'q2' as const,
     number: 2,
     trapIndex: 2,
-    title: '2. Bạn đã từng gặp chiêu trò "Chuyển khoản nhầm" tiền vào tài khoản rồi bị ép trả nợ lãi cao chưa?',
+    title: '2. Bạn đã từng gặp hoặc bị lừa đảo qua chiêu trò "Chuyển khoản nhầm" tiền vào tài khoản rồi ép trả nợ lãi cao chưa?',
     badge: 'Bẫy Rửa Tiền & Tín Dụng Đen',
     badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
     icon: '🏦',
     source: 'Kịch bản thực tế: Nhận tiền lạ bất ngờ, có người khóc lóc giục chuyển lại sang STK khác',
-    content: 'Tài khoản bất ngờ nhận được 3 - 10 triệu đồng kèm nội dung chuyển tiền lạ. Sau đó có người lạ gọi điện xin chuyển trả gấp vào tài khoản khác hoặc gửi link web ngân hàng yêu cầu nhập thông tin tra soát.',
+    content: 'Tài khoản bất ngờ nhận được 3 - 10 triệu đồng kèm nội dung chuyển tiền lạ. Sau đó có người lạ gọi điện khóc lóc xin chuyển trả gấp sang tài khoản khác hoặc gửi link web ngân hàng yêu cầu nhập thông tin tra soát.',
     options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tài khoản của tôi chưa từng phát sinh giao dịch nhận tiền bất thường.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi không tự ý chuyển tiền đi mà liên hệ ngay tổng đài ngân hàng để tra soát an toàn.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Bạn bè, người thân quanh tôi gặp liên tục; tôi luôn dặn mọi người giữ nguyên tiền chờ ngân hàng.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Chuyển tiền thật — Tôi từng cuống cuồng chuyển trả ngay hoặc từng bấm link đối soát lạ.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tài khoản của tôi chưa từng có người lạ chuyển nhầm tiền bất thường.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Từng nhận tiền lạ nhưng tôi cảnh giác báo ngân hàng tra soát, không tự ý chuyển tiền đi.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Quanh tôi gặp liên tục; tôi luôn dặn mọi người giữ nguyên tiền chờ ngân hàng xử lý.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng cuống cuồng chuyển trả ngay vào STK người lạ yêu cầu hoặc bị vu khống ép trả nợ.' },
     ],
   },
   {
     key: 'q3' as const,
     number: 3,
     trapIndex: 3,
-    title: '3. Bạn đã từng gặp cuộc gọi Video Call Deepfake AI giả mặt và giọng người thân vay tiền khẩn cấp chưa?',
+    title: '3. Bạn đã từng gặp hoặc bị lừa đảo qua cuộc gọi Video Call Deepfake AI giả mặt và giọng người thân vay tiền chưa?',
     badge: 'Deepfake AI Khuôn Mặt & Giọng Nói',
     badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
     icon: '📹',
@@ -163,16 +164,16 @@ export const SCENARIO_QUESTIONS = [
     content: 'Kẻ gian gọi video Messenger 5-10 giây hiện khuôn mặt và giọng nói của người thân kêu đang đi viện cấp cứu/tai nạn xe cộ, giục chuyển tiền gấp vào STK lạ của bác sĩ rồi cúp máy bảo mạng yếu.',
     options: [
       { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận cuộc gọi video nào có biểu hiện AI giả mạo như vậy.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Thấy hình giật méo và tài khoản nhận tiền lạ nên tôi gọi điện thoại di động trực tiếp để kiểm chứng.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Nhóm bạn và người thân trong gia đình tôi bị hack nick gọi vay tiền liên tục.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Chuyển tiền thật — Tôi quá bất ngờ vì thấy đúng mặt nên đã suýt chuyển hoặc đã chuyển tiền giúp.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Thấy hình giật méo và tài khoản nhận tiền lạ nên tôi gọi điện thoại di động trực tiếp để kiểm chứng.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Nhóm bạn và người thân trong gia đình tôi bị hack nick gọi vay tiền liên tục nhưng tôi luôn cảnh giác.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng tin tưởng chuyển tiền cho cuộc gọi video giả mạo người thân hoặc suýt chuyển tiền.' },
     ],
   },
   {
     key: 'q4' as const,
     number: 4,
     trapIndex: 4,
-    title: '4. Bạn đã từng nhận tin nhắn dọa phạt nguội giao thông hoặc dụ cài file ứng dụng lạ đuôi .APK chưa?',
+    title: '4. Bạn đã từng gặp hoặc bị lừa đảo qua tin nhắn phạt nguội giao thông hoặc dụ cài tệp ứng dụng .APK lạ chưa?',
     badge: 'Mã Độc Chiếm Quyền Trợ Năng (.APK)',
     badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     icon: '🚗',
@@ -180,33 +181,33 @@ export const SCENARIO_QUESTIONS = [
     content: 'Tin nhắn gửi tới: "Phương tiện của bạn vi phạm vượt đèn đỏ bị camera phạt nguội, bấm vào link tải tệp phatnguoi_giaothong.apk để xem hình ảnh và nộp phạt online trước ngày 20 để không bị cưỡng chế".',
     options: [
       { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận được tin nhắn tra cứu phạt nguội kèm link tải tệp lạ.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi biết cơ quan chức năng không gửi file .APK qua tin nhắn nên lập tức xóa bỏ.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Điện thoại tôi liên tục nhận SMS rác mạo danh CSGT, cơ quan thuế, điện lực.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Tải file thật — Tôi từng tải file APK về máy và cấp quyền trợ năng hoặc từng suýt bấm vào link.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Thỉnh thoảng có nhận SMS phạt nguội nhưng tôi xóa ngay, không bao giờ tải file.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Điện thoại tôi liên tục nhận SMS rác mạo danh CSGT, cơ quan thuế nhưng tôi không mở.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng tải tệp .APK về máy, bị chiếm quyền điều khiển điện thoại hoặc bị trừ tiền ngân hàng.' },
     ],
   },
   {
     key: 'q5' as const,
     number: 5,
     trapIndex: 5,
-    title: '5. Bạn đã từng gặp lời mời làm CTV Online "xem video TikTok, giật đơn Shopee nạp tiền hoa hồng khủng" chưa?',
+    title: '5. Bạn đã từng gặp hoặc bị lừa đảo qua lời mời làm CTV Online xem video, giật đơn hàng rồi dụ nạp tiền chưa?',
     badge: 'Tuyển Dụng Ảo & Bẫy Nhiệm Vụ Nạp Cọc',
     badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
     icon: '📱',
     source: 'Kịch bản thực tế: Nhắn tin Telegram/Zalo tuyển việc nhẹ lương 500k/ngày, giật đơn tăng tiền nạp',
-    content: 'Được thêm vào nhóm: "Tuyển CTV đánh giá sản phẩm Shopee/TikTok làm tại nhà 30-60 phút kiếm 300k - 1 triệu/ngày". Ban đầu làm nhiệm vụ xem video nhận thật 50k, sau đó yêu cầu nạp tiền mua gói nhiệm vụ lớn hơn để rút hoa hồng 40%.',
+    content: 'Được thêm vào nhóm: "Tuyển CTV đánh giá sản phẩm Shopee/TikTok làm tại nhà 30-60 phút kiếm 300k - 1 triệu/ngày". Ban đầu làm nhiệm vụ xem video nhận thật 50k, sau đó yêu cầu nạp tiền mua gói nhiệm vụ lớn hơn để rút hoa hồng 40% rồi giam tiền.',
     options: [
       { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng được nhắn tin hay bị kéo vào các nhóm tuyển việc làm online như thế.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi thấy mùi việc nhẹ lương cao nạp tiền cọc là tôi chặn ngay lập tức.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Cứ vài ngày lại bị add vào nhóm Zalo/Telegram tuyển CTV hoặc nhận tin nhắn chào việc.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Bị giam tiền thật — Tôi từng thử làm theo ăn được tiền nhỏ, sau đó nạp tiền lớn bị giam không rút ra được.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Thấy chiêu trò việc nhẹ lương cao nạp tiền cọc là tôi chặn ngay lập tức, không tham gia.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Cứ vài ngày lại bị add vào nhóm Zalo/Telegram tuyển CTV hoặc nhận tin nhắn chào việc nhưng tôi đều thoát.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng nạp tiền làm nhiệm vụ và bị giam tiền không rút ra được hoặc suýt nạp số tiền lớn.' },
     ],
   },
   {
     key: 'q6' as const,
     number: 6,
     trapIndex: 6,
-    title: '6. Bạn đã từng quét phải mã QR thanh toán bị dán đè tại quán ăn, cafe hoặc mã QR nhận quà giả mạo chưa?',
+    title: '6. Bạn đã từng gặp hoặc bị lừa đảo qua mã QR thanh toán bị dán đè hoặc quét mã QR dẫn đến trang web lạ chưa?',
     badge: 'Tấn Công Mã QR Độc Hại (Quishing)',
     badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
     icon: '☕',
@@ -214,16 +215,16 @@ export const SCENARIO_QUESTIONS = [
     content: 'Khi thanh toán tiền tại bàn hoặc quầy gửi xe, quét mã QR bất ngờ mở ra một trang web yêu cầu nhập thông tin đăng nhập ngân hàng/OTP, hoặc tên người thụ hưởng trên app ngân hàng khác hoàn toàn với tên quán.',
     options: [
       { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Mọi mã QR tôi quét tại quán đều đúng thông tin và an toàn.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi nhìn thấy tên chủ tài khoản thụ hưởng sai lệch nên dừng lại hỏi nhân viên quán ngay.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Tôi thấy nhiều quán bị dán đè QR và trên mạng cảnh báo liên tục nên tôi kiểm tra tên cực kỳ kỹ.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Chuyển nhầm tiền thật — Tôi từng chuyển tiền vội mà không nhìn lại tên chủ tài khoản, bị mất tiền oan.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Từng quét phải mã lạ nhưng tôi nhìn thấy tên người thụ hưởng sai lệch nên dừng lại hỏi nhân viên ngay.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Thấy nhiều quán bị dán đè QR và trên mạng cảnh báo liên tục nên tôi luôn kiểm tra tên cực kỳ kỹ.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng chuyển nhầm tiền cho mã QR bị dán đè hoặc bị đánh cắp tài khoản khi quét mã QR lạ.' },
     ],
   },
   {
     key: 'q7' as const,
     number: 7,
     trapIndex: 7,
-    title: '7. Bạn đã từng nhận cuộc gọi tự xưng Công an / Viện kiểm sát dọa bạn dính líu đến đường dây rửa tiền, ma túy chưa?',
+    title: '7. Bạn đã từng gặp hoặc bị lừa đảo qua cuộc gọi tự xưng Công an, Viện Kiểm Sát dọa bắt giam, ép chuyển tiền chưa?',
     badge: 'Thao Túng Tâm Lý & Áp Lực Bắt Giam',
     badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     icon: '📞',
@@ -231,16 +232,16 @@ export const SCENARIO_QUESTIONS = [
     content: 'Kẻ xưng là điều tra viên Bộ Công an: "Tài khoản của anh/chị đang dính vào đường dây buôn ma túy và rửa tiền xuyên quốc gia. Yêu cầu giữ bí mật tuyệt đối, đến nơi yên tĩnh và chuyển toàn bộ tiền tiết kiệm vào tài khoản kiểm toán của cơ quan điều tra".',
     options: [
       { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận được cuộc gọi dọa bắt giam hay điều tra án mạng nào.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi biết Công an làm việc chỉ gửi giấy mời trực tiếp chứ không làm việc qua điện thoại nên tắt máy ngay.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Tuần nào cũng có số lạ gọi dọa liên quan tới hồ sơ tội phạm, tôi trêu lại rồi dập máy.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Bị đe dọa thật — Nghe giọng quát nạt quá chân thực khiến tôi run sợ, từng suýt khai báo tài khoản ngân hàng.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi biết Công an chỉ gửi giấy mời trực tiếp chứ không làm việc qua điện thoại nên tắt máy ngay.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Tuần nào cũng có số lạ gọi dọa liên quan tới hồ sơ tội phạm, tôi dập máy luôn không sợ.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Nghe giọng quát nạt quá chân thực khiến tôi run sợ, từng suýt khai báo hoặc đã chuyển tiền vào tài khoản kẻ gian.' },
     ],
   },
   {
     key: 'q8' as const,
     number: 8,
     trapIndex: 8,
-    title: '8. Bạn đã từng gặp tình huống shipper gọi giao kiện hàng COD ảo lạ hoắc bắt thanh toán khi vắng nhà chưa?',
+    title: '8. Bạn đã từng gặp hoặc bị lừa đảo qua cuộc gọi giao kiện hàng COD ảo lạ hoắc bắt chuyển tiền khi vắng nhà chưa?',
     badge: 'Bẫy Kiện Hàng COD Ảo Giá Trị Nhỏ',
     badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
     icon: '📦',
@@ -248,33 +249,33 @@ export const SCENARIO_QUESTIONS = [
     content: 'Shipper gọi điện: "Anh/chị có gói hàng tri ân khách hàng COD 120k, em đến mà anh vắng nhà nên em gửi bác bảo vệ/nhét qua khe cửa nhé, anh chuyển tiền vào STK này giúp em". Trong khi bạn không nhớ rõ mình đã đặt món gì.',
     options: [
       { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Các đơn hàng ship đến tôi đều nắm rõ lịch trình trên ứng dụng mua sắm.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi kiểm tra lại lịch sử đơn hàng trên app thấy không có nên kiên quyết từ chối nhận và từ chối chuyển tiền.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Thường xuyên có các gói bưu phẩm lạ không rõ người gửi giao tới nhà thu tiền vặt.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Trả tiền thật — Tôi từng chuyển khoản 100k-200k nhận hộ người nhà, mở ra chỉ là giấy rác vụn không giá trị.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi kiểm tra lại lịch sử đơn hàng trên app thấy không có nên kiên quyết từ chối nhận và không chuyển tiền.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Thường xuyên có các gói bưu phẩm lạ không rõ người gửi giao tới nhà thu tiền vặt nhưng tôi từ chối.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng chuyển khoản 100k-200k nhận hộ người nhà, mở ra chỉ là giấy rác vụn không giá trị.' },
     ],
   },
   {
     key: 'q9' as const,
     number: 9,
     trapIndex: 9,
-    title: '9. Bạn đã từng nhận email hoặc SMS thông báo trúng thưởng xe máy / iPhone hoặc nhận tiền hoàn thuế chưa?',
+    title: '9. Bạn đã từng gặp hoặc bị lừa đảo qua thông báo trúng thưởng xe máy, điện thoại hoặc hoàn thuế đòi nộp phí trước chưa?',
     badge: 'Bẫy Tham Lam / Trúng Thưởng Ảo',
     badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
     icon: '📑',
     source: 'Kịch bản thực tế: Thông báo trúng xe SH/tiền hoàn thuế, yêu cầu nộp trước phí làm hồ sơ 10%',
     content: 'Tin nhắn/email gửi đến: "Chúc mừng số điện thoại của bạn đã may mắn trúng thưởng 01 xe máy Honda SH 150i trị giá 90 triệu đồng. Để nhận giải, vui lòng truy cập trang web và nộp khoản lệ phí trước bạ 2.500.000đ vào tài khoản ban tổ chức".',
     options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận được bất kỳ thông báo trúng thưởng bất ngờ nào.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi không tham gia quay số trúng thưởng nên biết chắc là trò lừa đảo và bỏ qua ngay.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Tin nhắn trúng thưởng xe, hoàn tiền thuế, quà tặng thương hiệu gửi vào máy tôi liên miên.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Đóng tiền thật — Tôi từng háo hức nhắn tin liên hệ ban tổ chức và suýt nộp tiền phí vận chuyển/lệ phí.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận được bất kỳ thông báo trúng thưởng hay hoàn tiền thuế bất thường nào.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi không tham gia quay số trúng thưởng nên biết chắc là trò lừa đảo đòi tiền phí và bỏ qua ngay.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Tin nhắn trúng thưởng xe, hoàn tiền thuế, quà tặng thương hiệu gửi vào máy tôi liên miên nhưng tôi không tin.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng háo hức liên hệ ban tổ chức, suýt nộp tiền phí vận chuyển hoặc từng bị lừa mất tiền cọc.' },
     ],
   },
   {
     key: 'q10' as const,
     number: 10,
     trapIndex: 10,
-    title: '10. Bạn đã từng thấy dịch vụ quảng cáo "Hỗ trợ kéo lại tiền bị lừa đảo mạng bằng công nghệ cao" chưa?',
+    title: '10. Bạn đã từng gặp hoặc bị lừa đảo qua dịch vụ quảng cáo "Hỗ trợ kéo lại tiền bị lừa mạng" rồi bắt đóng phí cọc chưa?',
     badge: 'Bẫy Lừa Đảo Kép (Recovery Scam)',
     badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     icon: '⚖️',
@@ -282,16 +283,16 @@ export const SCENARIO_QUESTIONS = [
     content: 'Quảng cáo trên Facebook/TikTok: "Văn phòng Luật sư liên kết Cục An ninh mạng cam kết thu hồi 100% tiền bị lừa qua Telegram/app đầu tư bằng thuật toán Blockchain. Nạn nhân chỉ cần nộp 10% phí đặt cọc làm việc hoặc phí mở cổng tra soát".',
     options: [
       { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng thấy hoặc quan tâm tới các bài quảng cáo dịch vụ thu hồi tiền lừa đảo này.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi biết thừa đây là chiêu trò lừa đảo bồi thêm một vố nữa vào nạn nhân nên cảnh báo bạn bè tránh xa.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Lướt mạng xã hội là thấy hàng loạt bài viết chạy quảng cáo lấy lại tiền lừa đảo tràn lan.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Bị lừa lần 2 — Người thân hoặc tôi từng nóng ruột muốn gỡ lại tiền nên đã nhắn tin nhờ vả và bị đòi tiền phí.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi biết thừa đây là chiêu trò lừa đảo bồi thêm một vố nữa vào nạn nhân nên cảnh báo bạn bè tránh xa.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Lướt mạng xã hội là thấy hàng loạt bài viết chạy quảng cáo lấy lại tiền lừa đảo tràn lan nhưng tôi lướt qua.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Người thân hoặc tôi từng nóng ruột muốn gỡ lại tiền nên đã nhắn tin nhờ vả và bị lừa đóng thêm tiền phí.' },
     ],
   },
   {
     key: 'q11' as const,
     number: 11,
     trapIndex: 11,
-    title: '11. Bạn đã từng nhận tin nhắn cảnh báo vi phạm bản quyền trang Fanpage / Facebook dọa khóa tài khoản vĩnh viễn chưa?',
+    title: '11. Bạn đã từng gặp hoặc bị lừa đảo qua tin nhắn mạo danh Facebook dọa xóa Fanpage vì vi phạm bản quyền chưa?',
     badge: 'Bẫy Phishing Đánh Cắp Tài Khoản & 2FA',
     badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
     icon: '🛡️',
@@ -299,16 +300,16 @@ export const SCENARIO_QUESTIONS = [
     content: 'Tin nhắn gửi đến hộp thư Facebook: "Trang cá nhân/Fanpage của bạn bị khiếu nại bản quyền nghiêm trọng và sẽ bị xóa vĩnh viễn sau 24 giờ. Vui lòng bấm vào liên kết meta-support-appeal.me để gửi đơn kháng cáo kèm mật khẩu và mã 2FA".',
     options: [
       { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Hộp thư Facebook của tôi chưa từng nhận cảnh báo bản quyền giả mạo như vậy.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi nhìn đuôi tên miền không phải của facebook.com nên không bao giờ bấm vào link.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Mỗi tuần Fanpage của tôi nhận hàng chục tin nhắn rác dọa xóa trang từ các tài khoản giả Meta.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Bị mất nick thật — Tôi lo sợ bị mất trang làm ăn nên đã bấm link và suýt nhập hoặc đã bị cướp tài khoản.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi nhìn đuôi tên miền không phải của facebook.com nên không bao giờ bấm vào link.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Mỗi tuần Fanpage của tôi nhận hàng chục tin nhắn rác dọa xóa trang từ các tài khoản giả Meta nhưng tôi xóa ngay.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng lo sợ bị mất trang làm ăn nên đã bấm link, điền mật khẩu và mã 2FA dẫn đến mất quyền quản trị.' },
     ],
   },
   {
     key: 'q12' as const,
     number: 12,
     trapIndex: 12,
-    title: '12. Bạn đã từng nhận cuộc gọi tổng đài dọa khóa SIM điện thoại sau 2 tiếng vì chưa chuẩn hóa thông tin chưa?',
+    title: '12. Bạn đã từng gặp hoặc bị lừa đảo qua cuộc gọi tự động dọa khóa SIM điện thoại sau 2 tiếng để lừa lấy mã OTP chưa?',
     badge: 'Khóa SIM Ảo & Đánh Cắp Mã OTP',
     badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     icon: '⚡',
@@ -316,9 +317,9 @@ export const SCENARIO_QUESTIONS = [
     content: 'Tổng đài tự động gọi: "Số thuê bao của quý khách chưa chuẩn hóa thông tin cá nhân và sẽ bị khóa liên lạc 2 chiều sau 2 giờ nữa. Bấm phím 1 để gặp nhân viên hỗ trợ", sau đó yêu cầu đọc số CCCD và mã OTP gửi về máy để cập nhật.',
     options: [
       { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận cuộc gọi dọa khóa SIM điện thoại tự động như thế này.' },
-      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp 1-2 lần — Tôi biết nhà mạng chỉ thông báo bằng tin nhắn Brandname chứ không gọi dọa ngắt máy nên tắt luôn.' },
-      { id: 'C_VERY_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần — Điện thoại tôi liên tục có các số bàn hoặc số lạ gọi đến phát đoạn ghi âm dọa khóa SIM.' },
-      { id: 'D_NEAR_MISS_TRAP', letter: 'D', text: 'Đã từng suýt mắc bẫy / Bị lừa mã OTP — Tôi sợ mất số liên lạc quan trọng nên đã bấm phím 1 và suýt đọc mã OTP cho kẻ gian.' },
+      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi biết nhà mạng chỉ thông báo bằng tin nhắn Brandname chứ không gọi dọa ngắt máy nên tắt luôn.' },
+      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Điện thoại tôi liên tục có các số bàn hoặc số lạ gọi đến phát đoạn ghi âm dọa khóa SIM nhưng tôi không làm theo.' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Tôi sợ mất số liên lạc quan trọng nên đã bấm phím 1 và suýt đọc mã OTP hoặc đã bị cướp SIM/tiền ngân hàng.' },
     ],
   },
 ];
@@ -328,6 +329,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
   onClose,
   onNavigateToResearch,
   onNavigateToMainUI,
+  onNavigateToSimulator,
 }) => {
   const [surveyStep, setSurveyStep] = useState<1 | 2>(1);
   const [submitting, setSubmitting] = useState(false);
@@ -408,13 +410,22 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
     setSubmitting(true);
 
     try {
-      // Calculate realistic baseline score based on 12 high-trap scenario questions
+      // Calculate realistic baseline score and distribution based on 12 practical encounter questions
       let safeCount = 0;
+      let neverCount = 0;
+      let rareCount = 0;
+      let oftenCount = 0;
+      let victimCount = 0;
+
       SCENARIO_QUESTIONS.forEach((q) => {
         const chosenId = surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers];
         if (chosenId && chosenId.endsWith('_SAFE')) {
           safeCount++;
         }
+        if (chosenId?.includes('NEVER')) neverCount++;
+        else if (chosenId?.includes('RARE') || chosenId?.includes('SPOTTED')) rareCount++;
+        else if (chosenId?.includes('OFTEN')) oftenCount++;
+        else if (chosenId?.includes('VICTIM') || chosenId?.endsWith('_TRAP')) victimCount++;
       });
 
       const preScore = Math.round((safeCount / totalTrapsCount) * 100);
@@ -461,7 +472,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
         },
         feedbackNote:
           surveyForm.feedbackNote ||
-          `Phiếu khảo sát thực tế ViSEF 2026 (17 câu hỏi: 5 nhân khẩu học & 12 câu khảo nghiệm tiếp xúc thủ đoạn thực tế). Trường: ${surveyForm.schoolName || 'THPT Chuyên'} - Lớp: ${surveyForm.className || 'Khối 11'}. Nhận diện an toàn ${safeCount}/${totalTrapsCount} tình huống - Điểm phòng thủ thực tế ban đầu: ${preScore}/100đ.`,
+          `Phiếu khảo sát thực tế ViSEF 2026 (17 câu: 5 nhân khẩu học & 12 câu khảo nghiệm tiếp xúc thủ đoạn thực tế). Trường: ${surveyForm.schoolName || 'THPT Chuyên'} - Lớp: ${surveyForm.className || 'Khối 11'}. Kết quả: Chưa gặp: ${neverCount} | Gặp ít: ${rareCount} | Gặp nhiều: ${oftenCount} | Đã từng bị lừa: ${victimCount} - Điểm phòng thủ thực tế: ${preScore}/100đ.`,
       };
 
       const res = await fetch('/api/research/survey', {
@@ -479,6 +490,10 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
         calculatedScore: preScore,
         postScore,
         safeCount,
+        neverCount,
+        rareCount,
+        oftenCount,
+        victimCount,
         participantName: displayName,
         schoolName: surveyForm.schoolName,
         className: surveyForm.className,
@@ -711,6 +726,32 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
               <span className="hidden sm:inline">Tải CSV Khảo Sát</span>
               <span className="sm:hidden">CSV</span>
             </button>
+            {onNavigateToResearch && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onNavigateToResearch();
+                }}
+                className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 hover:text-white text-xs font-bold transition border border-indigo-500/40 cursor-pointer shadow-sm"
+                title="Xem Biểu đồ nghiên cứu ViSEF"
+              >
+                <BarChart3 className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Biểu Đồ ViSEF</span>
+              </button>
+            )}
+            {onNavigateToSimulator && (
+              <button
+                onClick={() => {
+                  onClose();
+                  onNavigateToSimulator();
+                }}
+                className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 hover:text-white text-xs font-bold transition border border-amber-500/40 cursor-pointer shadow-sm"
+                title="Thực hành mô phỏng bẫy lừa đảo"
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                <span>Mô Phỏng Lừa Đảo</span>
+              </button>
+            )}
             {onNavigateToMainUI && (
               <button
                 onClick={() => {
@@ -805,6 +846,35 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                     <span className="text-[10px] text-emerald-400 block mt-1">+{submittedResult.postScore - submittedResult.calculatedScore}đ phòng thủ</span>
                   </div>
                 </div>
+
+                {/* Real-world Exposure & Experience Breakdown */}
+                <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
+                  <span className="text-[11px] font-bold text-slate-300 block uppercase tracking-wider">
+                    📊 Thống Kê Tiếp Xúc Thực Tế (12 Tình Huống):
+                  </span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                    <div className="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30">
+                      <span className="text-[10px] text-emerald-400 block font-medium">Chưa gặp bao giờ</span>
+                      <b className="text-base font-black text-white font-mono">{submittedResult.neverCount || 0}</b>
+                      <span className="text-[9px] text-slate-400 block">/ 12 thủ đoạn</span>
+                    </div>
+                    <div className="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/30">
+                      <span className="text-[10px] text-cyan-400 block font-medium">Gặp ít (1-2 lần)</span>
+                      <b className="text-base font-black text-white font-mono">{submittedResult.rareCount || 0}</b>
+                      <span className="text-[9px] text-slate-400 block">/ 12 thủ đoạn</span>
+                    </div>
+                    <div className="p-2 rounded-lg bg-amber-950/40 border border-amber-500/30">
+                      <span className="text-[10px] text-amber-400 block font-medium">Gặp thường xuyên</span>
+                      <b className="text-base font-black text-white font-mono">{submittedResult.oftenCount || 0}</b>
+                      <span className="text-[9px] text-slate-400 block">/ 12 thủ đoạn</span>
+                    </div>
+                    <div className="p-2 rounded-lg bg-rose-950/40 border border-rose-500/30">
+                      <span className="text-[10px] text-rose-400 block font-medium">Từng bị lừa / suýt bị</span>
+                      <b className="text-base font-black text-rose-300 font-mono">{submittedResult.victimCount || 0}</b>
+                      <span className="text-[9px] text-rose-400/80 block">/ 12 thủ đoạn</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Personal Vs Community Comparison Suite */}
@@ -834,6 +904,18 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                     <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
                     <span>📥 Tải File Dữ Liệu CSV</span>
                   </button>
+                  {onNavigateToSimulator && (
+                    <button
+                      onClick={() => {
+                        onClose();
+                        onNavigateToSimulator();
+                      }}
+                      className="w-full sm:w-auto px-4 py-2.5 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/40 font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                    >
+                      <Zap className="w-4 h-4 text-amber-400" />
+                      <span>⚡ Thực Hành Mô Phỏng Lừa Đảo</span>
+                    </button>
+                  )}
                   {onNavigateToMainUI && (
                     <button
                       onClick={() => {
@@ -981,6 +1063,50 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       <p className="text-slate-300 text-[10px] sm:text-[11px] leading-relaxed">
                         Hãy trả lời trung thực theo trải nghiệm thực tế của bạn hoặc người thân: đã từng gặp hay chưa, mức độ tiếp xúc và cách bạn đã xử lý khi đối mặt với thủ đoạn. Dữ liệu sẽ đồng bộ trực tiếp lên biểu đồ thống kê nghiên cứu khoa học ViSEF 2026.
                       </p>
+                    </div>
+
+                    {/* Quick Link Bar */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 sm:p-3 bg-slate-900/80 border border-slate-800 rounded-xl">
+                      <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1.5">
+                        <Link2 className="w-3.5 h-3.5 text-purple-400" />
+                        Liên kết nghiên cứu & tác chiến:
+                      </span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {onNavigateToResearch && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onClose();
+                              onNavigateToResearch();
+                            }}
+                            className="text-[11px] px-2.5 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 font-semibold flex items-center gap-1 cursor-pointer transition"
+                          >
+                            <BarChart3 className="w-3 h-3 text-indigo-400" />
+                            <span>📊 Xem Đồ Thị ViSEF</span>
+                          </button>
+                        )}
+                        {onNavigateToSimulator && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onClose();
+                              onNavigateToSimulator();
+                            }}
+                            className="text-[11px] px-2.5 py-1 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 font-semibold flex items-center gap-1 cursor-pointer transition"
+                          >
+                            <Zap className="w-3 h-3 text-amber-400" />
+                            <span>⚡ Thực Hành Mô Phỏng</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleDownloadSurveyCSV}
+                          className="text-[11px] px-2.5 py-1 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-semibold flex items-center gap-1 cursor-pointer transition"
+                        >
+                          <Download className="w-3 h-3 text-emerald-400" />
+                          <span>📥 Tải CSV Đồng Bộ</span>
+                        </button>
+                      </div>
                     </div>
 
                     {/* Progress Tracker Card with Clickable Scenario Jumps */}

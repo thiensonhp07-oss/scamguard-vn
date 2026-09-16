@@ -1089,6 +1089,11 @@ export default function App() {
             setIsScienceFairDemoOpen(false);
             setActiveTab('home');
           }}
+          onNavigateToSimulator={() => {
+            setIsScienceFairDemoOpen(false);
+            setActiveTab('train');
+            setTrainSubTab('arena');
+          }}
         />
       </div>
     </LanguageProvider>
