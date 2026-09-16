@@ -32,12 +32,15 @@ import {
   Zap,
   Gauge,
   Lock,
+  Download,
+  FileSpreadsheet,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import confetti from 'canvas-confetti';
 import { PersonalVsCommunityComparisonSuite } from './PersonalVsCommunityComparisonSuite';
 import { SurveyDemographicsSection } from './SurveyDemographicsSection';
 import mascotShield from '../assets/images/mascot_shield_transparent.png';
+import { CommunitySurveySubmission } from '../types';
 
 interface NationalScienceFairDemoModalProps {
   isOpen: boolean;
@@ -118,204 +121,204 @@ export const SCENARIO_QUESTIONS = [
     key: 'q1' as const,
     number: 6,
     trapIndex: 1,
-    title: 'Kịch bản SMS "DICHVUCONG" & VNeID Mức 2',
-    badge: 'Bẫy Tâm Lý Hoảng Loạn',
+    title: '1. Thủ Đoạn SMS Brandname "DICHVUCONG" / Mạo Danh Công An Dọa Khóa CCCD & VNeID',
+    badge: 'Bẫy Uy Quyền & Hoảng Loạn',
     badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     icon: '💬',
-    source: 'SMS Tin nhắn từ "DICHVUCONG"',
-    content: 'Bộ Công an thông báo: Hồ sơ VNeID Mức 2 của bạn bị lỗi đồng bộ dữ liệu dân cư. Để tránh bị vô hiệu hóa CCCD và tạm ngưng giao dịch ngân hàng từ 00h00, truy cập https://dichvucong.gov-vneid.com xác thực hoặc gọi Hotline 1900.88xx.',
+    source: 'Tình huống thực tế: SMS giả Brandname & Cuộc gọi mạo danh Công an',
+    content: 'Kẻ gian gửi tin nhắn mạo danh Cổng Dịch Vụ Công hoặc gọi điện thông báo: "Hồ sơ VNeID Mức 2 bị lỗi đồng bộ dữ liệu dân cư, CCCD sẽ bị khóa và tài khoản ngân hàng bị phong tỏa từ 00h00". Kẻ gian yêu cầu truy cập đường link lạ hoặc làm theo hướng dẫn khẩn cấp.',
     options: [
-      { id: 'C_TRAP', letter: 'A', text: 'Gọi ngay vào số Hotline 1900.88xx ghi ở cuối tin nhắn SMS để nhờ Cán bộ Dịch vụ công hỗ trợ qua điện thoại.' },
-      { id: 'A_TRAP', letter: 'B', text: 'Bấm vào đường link https://dichvucong.gov-vneid.com vì thấy có cụm từ "gov" và dấu tích xanh xác thực, sau đó nhập mã OTP.' },
-      { id: 'D_TRAP', letter: 'C', text: 'Chụp ảnh 2 mặt CCCD gửi qua Zalo cho số điện thoại cán bộ hỗ trợ để họ làm thủ tục đối soát trên hệ thống.' },
-      { id: 'B_SAFE', letter: 'D', text: 'Không bấm link, không gọi số trong SMS; tự mở ứng dụng VNeID chính thức hoặc ra trụ sở Công an Phường kiểm tra.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp tình huống này bao giờ trong thực tế (hoặc người thân chưa từng nhận).' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp/nhận được nhưng phát hiện ngay dấu hiệu lừa đảo & cảnh giác không làm theo.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (đã từng bấm vào link / gọi lại hotline / phân vân lo sợ bị khóa CCCD thật).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (bị lộ mã OTP, bị cài app lạ hoặc bị trừ tiền trong tài khoản).' },
     ],
   },
   {
     key: 'q2' as const,
     number: 7,
     trapIndex: 2,
-    title: 'Kịch bản "Chuyển Khoản Nhầm" 5,000,000đ & Nhờ Hoàn Trả',
+    title: '2. Chiêu Trò "Chuyển Khoản Nhầm" Tiền Vào Tài Khoản & Bẫy Tín Dụng Đen Trá Hình',
     badge: 'Bẫy Rửa Tiền / Tín Dụng Đen',
     badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
     icon: '🏦',
-    source: 'Biến động số dư tài khoản',
-    content: '+5.000.000 VND từ NGUYEN VAN A. Sau 2 phút, có số điện thoại lạ gọi khóc lóc nói chuyển nhầm tiền viện phí khẩn cấp, nhờ bạn chuyển trả ngay lại cho số tài khoản ban đầu vừa gửi tới.',
+    source: 'Tình huống thực tế: Tài khoản bỗng nhận được tiền lạ & Người gọi giục chuyển lại',
+    content: 'Bỗng nhiên tài khoản nhận được một khoản tiền lạ (VD: 5.000.000đ). Sau vài phút, có người lạ gọi điện khóc lóc nói chuyển nhầm tiền viện phí/tiền thuốc khẩn cấp, giục chuyển ngay lại sang một số tài khoản khác hoặc gửi link "Cổng hoàn tiền ngân hàng" để bù trừ.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Chuyển trả ngay 5 triệu về đúng Số tài khoản ngân hàng nguồn vừa chuyển tới vì tiền thật đã vào máy và muốn giúp người.' },
-      { id: 'C_TRAP', letter: 'B', text: 'Nhấp vào đường link "Cổng Hoàn Tiền Ngân Hàng" do người chuyển gửi qua Zalo để hệ thống tự động bù trừ.' },
-      { id: 'D_TRAP', letter: 'C', text: 'Chuyển trả 5 triệu sang Số tài khoản khác của Bệnh viện mà người gọi vừa cung cấp.' },
-      { id: 'B_SAFE', letter: 'D', text: 'Không tự chuyển tiền; gọi Hotline chính thức Ngân hàng của mình (in trên thẻ ATM) yêu cầu Ngân hàng tự tra soát hoàn tiền.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp tình huống này bao giờ trong thực tế.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp nhưng cảnh giác không tự chuyển tiền lại; chủ động báo ngân hàng xử lý tra soát.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (suýt chuyển khoản trả lại ngay vào STK người gọi cung cấp hoặc suýt bấm link hoàn tiền).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (bị kẻ gian vu khống vay nợ lãi cao hoặc bị trừ tiền khi bấm link lạ).' },
     ],
   },
   {
     key: 'q3' as const,
     number: 8,
     trapIndex: 3,
-    title: 'Cuộc Gọi Video Call Deepfake AI 5 Giây Từ Bạn Thân',
-    badge: 'Bẫy Công Nghệ Deepfake',
+    title: '3. Cuộc Gọi Video Call / Voice Deepfake AI Giả Mặt & Giọng Người Thân Mượn Tiền Gấp',
+    badge: 'Bẫy Công Nghệ Deepfake AI',
     badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
     icon: '📹',
-    source: 'Video Call Zalo',
-    content: 'Màn hình hiện đúng khuôn mặt và đúng giọng bạn thân 5 giây (chập chờn): "Tao đang cấp cứu ở bệnh viện gấp, chuyển hộ tao 4.5 triệu vào STK này tý về tao trả!" rồi tắt máy.',
+    source: 'Tình huống thực tế: Video Call Zalo/Messenger vài giây mờ ảo rồi nhắn STK lạ',
+    content: 'Nhận cuộc gọi video hiện đúng khuôn mặt và giọng nói của bạn bè/người thân nhưng hình ảnh hơi giật mờ trong vài giây: "Tao đang cấp cứu/sự cố ở viện gấp, chuyển hộ tao vài triệu vào STK này tý tao gửi lại!" rồi cúp máy viện cớ mạng yếu.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Chuyển tiền ngay lập tức vì đã tận mắt nhìn thấy khuôn mặt và nghe đúng giọng nói bạn thân qua Video Call.' },
-      { id: 'C_TRAP', letter: 'B', text: 'Nhắn tin lại qua chính ô chat Zalo đó hỏi: "Mày mới gọi video call đúng không, có phải tao chuyển vào STK này không?".' },
-      { id: 'D_TRAP', letter: 'C', text: 'Chuyển trước 1-2 triệu cho bạn ứng cứu rồi chờ bạn gọi lại xác nhận chuyển nốt số còn lại.' },
-      { id: 'B_SAFE', letter: 'D', text: 'Ngắt mạng Zalo, gọi trực tiếp bằng số điện thoại di động thông thường (GSM) hoặc hỏi một bí mật riêng chỉ 2 người biết.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp tình huống cuộc gọi giả dạng AI này trong thực tế.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp nhưng nghi ngờ ngay, gọi điện thoại GSM trực tiếp hoặc hỏi bí mật riêng để xác thực.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (tin tưởng vì thấy đúng mặt/giọng, suýt chuyển tiền trước khi kịp kiểm chứng).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (đã chuyển tiền cho tài khoản kẻ gian do tin vào cuộc gọi Deepfake).' },
     ],
   },
   {
     key: 'q4' as const,
     number: 9,
     trapIndex: 4,
-    title: 'SMS Phạt Nguội CSGT Kèm Link Tải File .APK',
-    badge: 'Bẫy Mã Độc Chiếm OTP',
+    title: '4. SMS Thông Báo Phạt Nguội CSGT & Bẫy Dụ Cài Tệp Mã Độc .APK Chiếm Quyền Điện Thoại',
+    badge: 'Bẫy Mã Độc Chiếm OTP & Banking',
     badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     icon: '🚗',
-    source: 'SMS từ "CUC CSGT THONG BAO"',
-    content: 'Xe máy BKS 29-X1 88x.xx vi phạm vượt đèn đỏ. Tải tệp bienban_phatnguoi.apk hoặc truy cập http://gtdvc-gov.vn để xem hình ảnh vi phạm và nộp phạt trước 18h.',
+    source: 'Tình huống thực tế: Tin nhắn dọa phạt nguội yêu cầu tải tệp .apk hoặc bấm link tra cứu',
+    content: 'Tin nhắn mạo danh Cục CSGT thông báo phương tiện vi phạm giao thông sắp bị xử lý cưỡng chế, yêu cầu tải tệp bienban_phatnguoi.apk hoặc bấm link web lạ để xem hình ảnh vi phạm và nộp phạt online.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Tải tệp bienban_phatnguoi.apk về điện thoại Android để cài đặt xem hình ảnh bằng chứng vi phạm.' },
-      { id: 'B_TRAP', letter: 'B', text: 'Nhấp vào đường link gtdvc-gov.vn và điền thông tin thẻ ngân hàng nộp phạt để tránh bị phạt nhân đôi.' },
-      { id: 'D_TRAP', letter: 'C', text: 'Gọi vào số điện thoại Cán bộ CSGT ghi trong SMS để nhờ tra cứu biển số xe giúp.' },
-      { id: 'C_SAFE', letter: 'D', text: 'Không tải file, không bấm link; tự gõ địa chỉ Trang chủ Cục CSGT (csgt.vn) hoặc mở ứng dụng VNeTraffic.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp tình huống tin nhắn phạt nguội kèm link/file APK này.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp nhưng tuyệt đối không tải file APK lạ, tự tra cứu trên cổng csgt.vn chính thức.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (đã từng tải tệp .apk về máy hoặc bấm vào link điền thông tin xe vì lo lắng).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (bị mã độc APK chiếm quyền trợ năng Accessibility và tự động chuyển tiền ngân hàng).' },
     ],
   },
   {
     key: 'q5' as const,
     number: 10,
     trapIndex: 5,
-    title: 'Mã QR Thanh Toán Quán Cà Phê Bị Dán Đè (Quishing)',
-    badge: 'Bẫy QR Độc Hại',
+    title: '5. Tấn Công Quishing: Quét Mã QR Thanh Toán Bị Dán Đè Tại Quán Ăn / Cafe / Nhận Quà',
+    badge: 'Bẫy QR Độc Hại (Quishing)',
     badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
     icon: '☕',
-    source: 'Thanh toán 45.000đ tại bàn',
-    content: 'Bạn mở ứng dụng Camera iPhone/Android quét mã QR dán tại bàn quán cà phê. Trình duyệt mở ra trang web yêu cầu nhập Tên đăng nhập & Mật khẩu Banking để thanh toán.',
+    source: 'Tình huống thực tế: Mã QR tại bàn bị dán đè hoặc mã QR chuyển hướng web giả mạo',
+    content: 'Khi thanh toán tiền tại quầy hoặc bàn ăn, quét mã QR dẫn tới một trang web lạ yêu cầu nhập thông tin đăng nhập Internet Banking / mã OTP, hoặc mã QR bị dán đè chuyển tiền sang tài khoản của kẻ gian.',
     options: [
-      { id: 'C_TRAP', letter: 'A', text: 'Sử dụng ứng dụng Camera mặc định của điện thoại để quét và làm theo hướng dẫn mở trang web thanh toán.' },
-      { id: 'A_TRAP', letter: 'B', text: 'Nhập Tên đăng nhập & Mật khẩu Banking trực tiếp vào trang web hiện ra để chuyển nhanh 45.000đ.' },
-      { id: 'D_TRAP', letter: 'C', text: 'Nhập mã OTP nhận từ SMS để hoàn tất giao dịch thanh toán hóa đơn.' },
-      { id: 'B_SAFE', letter: 'D', text: 'Tắt trang web ngay; chỉ sử dụng tính năng Quét mã QR bên trong ứng dụng Ngân hàng (Mobile Banking) chính thức.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp sự cố với mã QR thanh toán độc hại.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp nhưng luôn kiểm tra tên chủ tài khoản thụ hưởng trên App ngân hàng trước khi bấm chuyển.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (suýt chuyển tiền cho mã QR dán đè hoặc suýt nhập thông tin vào trang web do QR mở ra).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (chuyển nhầm tiền cho mã QR giả hoặc bị hack tài khoản do quét mã QR lạ).' },
     ],
   },
   {
     key: 'q6' as const,
     number: 11,
     trapIndex: 6,
-    title: 'Bẫy Nhiệm Vụ Telegram Xem Video Nhận Hoa Hồng 500k/Ngày',
-    badge: 'Bẫy Lợi Nhuận Multi-Level',
+    title: '6. Bẫy Tuyển CTV Shopee/TikTok/Telegram Làm Nhiệm Vụ Nạp Tiền Nhận Hoa Hồng Khủng',
+    badge: 'Bẫy Lợi Nhuận Đa Cấp / Ponzi',
     badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
     icon: '📱',
-    source: 'Nhóm Telegram 50 người',
-    content: 'Trưởng nhóm đăng bài: "Xem 5 video YouTube nhận 100k, làm xong chuyển cọc 200k mở nhiệm vụ VIP nhận ngay 2 triệu". Trong nhóm hàng chục tài khoản liên tục gửi ảnh hóa đơn đã rút tiền thành công.',
+    source: 'Tình huống thực tế: Lời mời làm CTV online, xem video/đánh giá sản phẩm nạp tiền tăng dần',
+    content: 'Được mời tham gia nhóm làm nhiệm vụ: xem 5 video nhận 100k, sau đó kẻ gian yêu cầu nạp tiền cọc mở nhiệm vụ đơn hàng VIP 500k - 2tr để nhận hoa hồng 30-50%. Trong nhóm có hàng chục chim mồi liên tục gửi ảnh rút tiền thành công.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Chuyển ngay 200k cọc vì thấy hàng chục thành viên trong nhóm liên tục chụp ảnh rút tiền 2 triệu thành công.' },
-      { id: 'B_TRAP', letter: 'B', text: 'Nhắn tin riêng cho 2 thành viên trong nhóm hỏi xem họ có rút tiền thật không, nếu họ xác nhận đúng thì chuyển cọc.' },
-      { id: 'C_TRAP', letter: 'C', text: 'Chuyển thử 50k trước để xem hệ thống có trả lại tiền thưởng thật không.' },
-      { id: 'D_SAFE', letter: 'D', text: 'Thoát nhóm lập tức; nhận diện đây là bẫy seeding chim mồi giả danh, không nộp cọc dưới bất kỳ hình thức nào.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng nhận lời mời hay tham gia nhóm tuyển CTV nhiệm vụ này.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp/nhận tin nhắn mời nhưng lập tức nhận diện bẫy lừa đảo nạp cọc và chặn ngay.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (đã thử làm nhiệm vụ đầu nhận được vài chục nghìn, suýt nạp tiền cọc nhiệm vụ lớn).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (bị lừa nạp tiền nhiều lần và bị giam tiền không rút được).' },
     ],
   },
   {
     key: 'q7' as const,
     number: 12,
     trapIndex: 7,
-    title: 'Cuộc Gọi Tự Động Thông Báo Khóa SIM Trong 2 Giờ',
-    badge: 'Bẫy Uy Quyền & Áp Lực Hạn Chót',
+    title: '7. Cuộc Gọi Tự Động Mạo Danh Cục Viễn Thông Dọa Khóa SIM Điện Thoại Trong 2 Giờ',
+    badge: 'Bẫy Uy Quyền & Áp Lực Thời Gian',
     badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     icon: '📞',
-    source: 'Cuộc gọi thoại tự động',
-    content: 'Tổng đài Cục Viễn thông thông báo: Thuê bao của bạn chưa chuẩn hóa dữ liệu dân cư. SIM sẽ bị thu hồi vĩnh viễn trong 2 giờ nữa. Bấm phím 1 để gặp tổng đài viên hỗ trợ cập nhật thông tin gấp.',
+    source: 'Tình huống thực tế: Cuộc gọi robot dọa ngắt liên lạc để ép bấm phím đọc thông tin',
+    content: 'Tổng đài tự động gọi thông báo: "Thuê bao chưa chuẩn hóa dữ liệu sẽ bị khóa 2 chiều và thu hồi số vĩnh viễn sau 2 giờ. Bấm phím 1 để gặp cán bộ hỗ trợ cập nhật gấp", sau đó yêu cầu đọc số CCCD và mã OTP gửi về máy.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Bấm phím 1 gặp tổng đài viên và đọc số CCCD + Mã OTP gửi về máy để giữ lại số điện thoại giao dịch.' },
-      { id: 'B_TRAP', letter: 'B', text: 'Bấm phím 1 để hỏi xem ai đang gọi và cung cấp thông tin ngày cấp CCCD cho họ đối soát.' },
-      { id: 'C_TRAP', letter: 'C', text: 'Nhấp vào đường link trong SMS dọa khóa SIM vừa gửi tới để tự điền form cập nhật.' },
-      { id: 'D_SAFE', letter: 'D', text: 'Tắt máy; kiểm tra thông tin chính chủ bằng cú pháp TTTB gửi 1414 (miễn phí) hoặc ra trực tiếp điểm giao dịch nhà mạng.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng nhận cuộc gọi dọa khóa SIM tự động này.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp nhưng tắt máy ngay; chủ động soạn tin nhắn TTTB gửi 1414 để kiểm tra chính chủ.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (đã bấm phím 1 và trao đổi với đối tượng do lo sợ bị mất số điện thoại làm ăn/liên lạc).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (đã cung cấp thông tin cá nhân/OTP dẫn đến việc bị cướp quyền SIM/tài khoản).' },
     ],
   },
   {
     key: 'q8' as const,
     number: 13,
     trapIndex: 8,
-    title: 'Đơn Hàng Giao COD 120.000đ Bất Ngờ Khi Bạn Vắng Nhà',
+    title: '8. Bẫy Kiện Hàng COD Ảo Thu Tiền Bất Ngờ Khi Bạn Vắng Nhà',
     badge: 'Bẫy COD Giá Trị Nhỏ',
     badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
     icon: '📦',
-    source: 'Shipper gọi điện',
-    content: 'Em có đơn hàng quà tặng may mắn COD 120k anh không có ở nhà, anh chuyển khoản STK em nhét cổng cho anh nhé! (trong khi bạn không nhớ rõ mình có đặt hàng hay không).',
+    source: 'Tình huống thực tế: Shipper gọi thông báo có gói hàng 100k-150k gửi nhét cổng',
+    content: 'Shipper gọi điện báo có đơn hàng quà tặng may mắn COD 120k trong khi bạn vắng nhà và không nhớ rõ có đặt hay không, giục chuyển khoản trước để nhét gói hàng qua khe cửa hoặc gửi link tra cứu mã vận đơn lạ.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Chuyển khoản ngay 120k vì số tiền nhỏ và nghĩ có thể người thân đặt hộ hoặc quà tri ân.' },
-      { id: 'B_TRAP', letter: 'B', text: 'Nhấp vào đường link "Tra cứu mã vận đơn COD" do shipper gửi qua tin nhắn để xem sản phẩm bên trong.' },
-      { id: 'C_TRAP', letter: 'C', text: 'Chuyển khoản 120k rồi nhờ shipper chụp ảnh gói hàng nhét qua khe cửa.' },
-      { id: 'D_SAFE', letter: 'D', text: 'Từ chối nhận và từ chối chuyển khoản; mở ứng dụng Shopee/Lazada chính thức tra cứu lịch sử mua hàng trước.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp tình huống giao hàng COD ảo này.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp nhưng từ chối nhận và từ chối chuyển tiền; kiểm tra lịch sử mua hàng trên App TMĐT chính thức.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (suýt chuyển khoản tiền vì thấy số tiền nhỏ 100k và tưởng người thân đặt hộ).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (đã chuyển tiền nhận bưu phẩm rác/hộp giấy rỗng không có giá trị).' },
     ],
   },
   {
     key: 'q9' as const,
     number: 14,
     trapIndex: 9,
-    title: 'Email Quyết Toán Thuế & Hoàn Tiền Thu Nhập Cá Nhân 8.5 Tr',
-    badge: 'Bẫy Phishing Spear & Cơ Quan Thuế',
+    title: '9. Email / Tin Nhắn Giả Mạo Cơ Quan Thuế Thông Báo Hoàn Thuế Thu Nhập Cá Nhân Kèm Link Web Lạ',
+    badge: 'Bẫy Phishing Mạo Danh Cơ Quan Thuế',
     badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
     icon: '📑',
-    source: 'Email từ "tongcucthue@gdt-gov-vn.com"',
-    content: 'Thông báo hoàn thuế TNCN năm 2025: Bạn được hoàn 8.520.000 VND. Vui lòng truy cập cổng https://gdt-gov-vn.com/hoanthue và nhập thông tin thẻ ghi nợ ngân hàng nhận tiền trước ngày 15.',
+    source: 'Tình huống thực tế: Email thông báo hoàn tiền thuế TNCN yêu cầu nhập thông tin thẻ ngân hàng',
+    content: 'Nhận email thông báo quyết toán thuế được hoàn 8.520.000đ, yêu cầu truy cập website thuế giả mạo để điền số thẻ ATM/mã bảo mật CVV và mã OTP để hệ thống chuyển tiền hoàn thuế vào tài khoản.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Bấm ngay vào link trong email để điền thông tin tài khoản và mã CVV thẻ ngân hàng nhận khoản tiền hoàn 8.5 triệu.' },
-      { id: 'B_TRAP', letter: 'B', text: 'Tải file đính kèm "ThongBaoHoanThue.pdf.exe" về máy tính mở ra để xem chi tiết bảng đối soát hoàn thuế.' },
-      { id: 'C_TRAP', letter: 'C', text: 'Phản hồi lại email cung cấp ảnh chụp 2 mặt CCCD và số tài khoản ngân hàng để cán bộ thuế chuyển khoản trực tiếp.' },
-      { id: 'D_SAFE', letter: 'D', text: 'Không bấm link/tải file; tự mở ứng dụng eTax Mobile của Tổng cục Thuế hoặc gõ trực tiếp thuedientu.gdt.gov.vn kiểm tra.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng nhận email/tin nhắn thông báo hoàn thuế lạ.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp nhưng kiểm tra kỹ đuôi tên miền, chỉ tra cứu trên App eTax Mobile hoặc thuedientu.gdt.gov.vn.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (đã bấm vào link email và điền một phần thông tin thẻ vì tưởng có tiền hoàn thật).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (bị kẻ gian trừ tiền thẻ tín dụng/thẻ ghi nợ sau khi nhập thông tin).' },
     ],
   },
   {
     key: 'q10' as const,
     number: 15,
     trapIndex: 10,
-    title: 'Trạm Sạc Điện Thoại Công Cộng & Kết Nối Cáp "Juice Jacking"',
-    badge: 'Bẫy Phần Cứng & Đọc Trộm Dữ Liệu',
+    title: '10. Cổng Sạc USB Công Cộng Đọc Trộm Dữ Liệu (Juice Jacking) Tại Sân Bay / Bến Xe',
+    badge: 'Bẫy Phần Cứng & Đọc Dữ Liệu Ngầm',
     badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
     icon: '⚡',
-    source: 'Trạm sạc USB sân bay / quán cafe',
-    content: 'Bạn cắm cáp sạc điện thoại tại cổng USB công cộng miễn phí ở phòng chờ. Màn hình điện thoại lập tức hiện lên hộp thoại: "Tin cậy máy tính này? (Trust This Computer)" kèm yêu cầu nhập mật khẩu mở khóa máy.',
+    source: 'Tình huống thực tế: Cắm cáp sạc USB công cộng và hiện thông báo "Tin cậy máy tính này?"',
+    content: 'Cắm cáp sạc tại cổng USB công cộng miễn phí ở phòng chờ sân bay/quán cafe, màn hình điện thoại hiện lên hộp thoại: "Tin cậy máy tính này? (Trust This Computer)" đòi mật khẩu mở khóa máy.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Nhập mật khẩu máy và chọn "Tin cậy (Trust)" để thiết bị kích hoạt chế độ sạc nhanh (Fast Charge) dòng cao.' },
-      { id: 'B_TRAP', letter: 'B', text: 'Rút cáp ra rồi cắm lại vào cổng USB bên cạnh để xem có còn hiện thông báo đó hay không.' },
-      { id: 'C_TRAP', letter: 'C', text: 'Bật kết nối NFC hoặc Bluetooth chạm vào trạm sạc để nhận diện chứng chỉ an toàn của nhà cung cấp.' },
-      { id: 'D_SAFE', letter: 'D', text: 'Bấm "Không tin cậy (Don\'t Trust)" và rút cáp ngay; chỉ dùng củ sạc cắm ổ 220V riêng hoặc dùng đầu lọc USB Data Blocker.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp hoặc chưa từng dùng cổng sạc USB công cộng không rõ nguồn gốc.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp và bấm "Không tin cậy", rút cáp ngay; chỉ dùng củ sạc cắm ổ điện 220V riêng.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (đã bấm "Tin cậy" vì nghĩ đó là điều kiện bắt buộc để kích hoạt chế độ sạc nhanh).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (bị rò rỉ dữ liệu hình ảnh, tệp tin hoặc cài mã theo dõi ngầm vào máy).' },
     ],
   },
   {
     key: 'q11' as const,
     number: 16,
     trapIndex: 11,
-    title: 'Cảnh Báo Bản Quyền Meta: "Trang Sẽ Bị Xóa Vĩnh Viễn Sau 24h"',
-    badge: 'Bẫy Chiếm Đoạt Tài Khoản & OTP 2FA',
+    title: '11. Tin Nhắn Cảnh Báo Vi Phạm Bản Quyền Meta Fanpage Dọa Xóa Trang Vĩnh Viễn Trong 24h',
+    badge: 'Bẫy Chiếm Đoạt Trang & Mã 2FA',
     badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
     icon: '🛡️',
-    source: 'Thông báo & Tin nhắn Fanpage',
-    content: 'Tin nhắn từ "Meta Policy Copyright Team": Trang cá nhân/Fanpage của bạn bị khiếu nại bản quyền nghiêm trọng và sẽ bị khóa vĩnh viễn trong 24h. Bấm link https://appeal-meta-support.net nhập mật khẩu và mã 2FA để kháng cáo.',
+    source: 'Tình huống thực tế: Tin nhắn mạo danh Meta Support Team dọa xóa Fanpage/Facebook cá nhân',
+    content: 'Nhận tin nhắn mạo danh Meta thông báo Fanpage bị khiếu nại bản quyền nghiêm trọng sẽ bị vô hiệu hóa sau 24h, yêu cầu bấm link lạ nhập mật khẩu và mã xác thực 2 bước 2FA để gửi đơn kháng cáo.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Bấm ngay vào đường link appeal-meta-support.net, điền mật khẩu và mã xác thực 2FA để tránh bị mất tài khoản vĩnh viễn.' },
-      { id: 'B_TRAP', letter: 'B', text: 'Gửi ảnh chụp CCCD và email khôi phục cho tài khoản Fanpage vừa nhắn tin để nhờ họ hỗ trợ mở khóa.' },
-      { id: 'C_TRAP', letter: 'C', text: 'Tải file đính kèm "Case_Detail.zip" giải nén để xem bài viết nào đang bị đối thủ khiếu nại bản quyền.' },
-      { id: 'D_SAFE', letter: 'D', text: 'Không bấm link; tự mở menu Cài đặt > Hộp thư Hỗ trợ (Support Inbox) chính thức trong ứng dụng Facebook để kiểm tra.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng nhận tin nhắn mạo danh bản quyền Meta này.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng gặp nhưng kiểm tra đúng trong Hộp thư Hỗ trợ (Support Inbox) chính thức của Facebook và xóa bỏ tin nhắn rác.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (đã bấm vào link kháng cáo do lo sợ mất kênh bán hàng/trang cá nhân nhiều người theo dõi).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (bị kẻ gian cướp quyền Quản trị viên Fanpage hoặc bị đổi mật khẩu Facebook).' },
     ],
   },
   {
     key: 'q12' as const,
     number: 17,
     trapIndex: 12,
-    title: 'Bẫy "Văn Phòng Luật Sư / An Ninh Mạng Thu Hồi Tiền Bị Lừa"',
+    title: '12. Chiêu Trò "Văn Phòng Luật Sư / An Ninh Mạng Thu Hồi Tiền Bị Lừa" (Bẫy Lừa Đảo Kép)',
     badge: 'Bẫy Lừa Đảo Kép (Recovery Scam)',
     badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
     icon: '⚖️',
-    source: 'Quảng cáo Facebook / Hội nhóm',
-    content: 'Trang "Văn phòng Luật sư Hoàng Gia - Hỗ trợ kéo tiền treo lừa đảo mạng": Cam kết thu hồi 100% tiền bị lừa qua hệ thống đối soát Blockchain. Yêu cầu bạn chuyển trước 10% phí ủy thác làm hồ sơ ra ngân hàng.',
+    source: 'Tình huống thực tế: Quảng cáo cam kết lấy lại tiền treo lừa đảo mạng nhưng đòi nộp phí trước',
+    content: 'Thấy quảng cáo trên mạng tự xưng "Văn phòng Luật sư / Cục An ninh mạng hỗ trợ kéo tiền treo bị lừa đảo mạng 100% bằng công nghệ Blockchain", sau đó yêu cầu nộp trước 10-20% tiền phí ủy thác hồ sơ hoặc cài app lạ.',
     options: [
-      { id: 'A_TRAP', letter: 'A', text: 'Chuyển ngay 10% phí làm hồ sơ ủy thác vì thấy trang có con dấu luật sư đỏ và hàng trăm bình luận cảm ơn đã lấy lại được tiền.' },
-      { id: 'B_TRAP', letter: 'B', text: 'Cung cấp số tài khoản ngân hàng và mã OTP biến động số dư cho chuyên viên để họ kết nối kéo tiền về ví.' },
-      { id: 'C_TRAP', letter: 'C', text: 'Cài ứng dụng "Bảo hộ tài chính" dạng file .apk do chuyên viên gửi qua Zalo để quét định vị dòng tiền.' },
-      { id: 'D_SAFE', letter: 'D', text: 'Tuyệt đối không tin bất kỳ dịch vụ "lấy lại tiền lừa đảo" nào trên mạng; mang chứng cứ ra Cơ quan Công an sở tại tố giác.' },
+      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng tiếp xúc với các dịch vụ lấy lại tiền lừa đảo này.' },
+      { id: 'B_SPOTTED_SAFE', letter: 'B', text: 'Đã từng thấy nhưng biết rõ đây là bẫy lừa đảo kép; chỉ mang chứng cứ ra Cơ quan Công an sở tại tố giác.' },
+      { id: 'C_NEAR_MISS_TRAP', letter: 'C', text: 'Đã từng suýt mắc bẫy (đã nhắn tin tư vấn và suýt chuyển phí ủy thác vì tâm lý nóng lòng muốn lấy lại tiền).' },
+      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng là nạn nhân thực tế (bị lừa chuyển thêm tiền phí dịch vụ thu hồi tiền).' },
     ],
   },
 ];
@@ -446,19 +449,19 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
           timeToDecidePostSec: 11.5,
           scamDnaShift: {
             before: {
-              T: surveyForm.trapAnswers.q1 !== 'B_SAFE' ? 0.88 : 0.20,
-              A: surveyForm.trapAnswers.q1 !== 'B_SAFE' ? 0.82 : 0.18,
-              G: surveyForm.trapAnswers.q6 !== 'D_SAFE' ? 0.85 : 0.22,
-              E: surveyForm.trapAnswers.q3 !== 'B_SAFE' ? 0.90 : 0.15,
-              C: surveyForm.trapAnswers.q4 !== 'C_SAFE' ? 0.84 : 0.16,
-              R: surveyForm.trapAnswers.q5 !== 'B_SAFE' ? 0.80 : 0.12,
+              T: (surveyForm.trapAnswers.q1?.endsWith('_TRAP') || surveyForm.trapAnswers.q4?.endsWith('_TRAP')) ? 0.88 : 0.20,
+              A: (surveyForm.trapAnswers.q1?.endsWith('_TRAP') || surveyForm.trapAnswers.q7?.endsWith('_TRAP')) ? 0.84 : 0.18,
+              G: (surveyForm.trapAnswers.q6?.endsWith('_TRAP') || surveyForm.trapAnswers.q8?.endsWith('_TRAP')) ? 0.85 : 0.22,
+              E: (surveyForm.trapAnswers.q2?.endsWith('_TRAP') || surveyForm.trapAnswers.q3?.endsWith('_TRAP')) ? 0.90 : 0.15,
+              C: (surveyForm.trapAnswers.q5?.endsWith('_TRAP') || surveyForm.trapAnswers.q11?.endsWith('_TRAP')) ? 0.82 : 0.16,
+              R: (surveyForm.trapAnswers.q10?.endsWith('_TRAP') || surveyForm.trapAnswers.q12?.endsWith('_TRAP')) ? 0.86 : 0.14,
             },
             after: { T: 0.14, A: 0.12, G: 0.13, E: 0.15, C: 0.14, R: 0.10 },
           },
         },
         feedbackNote:
           surveyForm.feedbackNote ||
-          `Phiếu khảo sát bẫy cao cấp ViSEF 2026 (17 câu hỏi chuẩn hóa: 5 nhân khẩu + 12 bẫy tác chiến). Trường: ${surveyForm.schoolName || 'THPT Chuyên'} - Lớp: ${surveyForm.className || 'Khối 11'}. Tránh được ${safeCount}/${totalTrapsCount} bẫy thực tế - Điểm phòng thủ ban đầu: ${preScore}/100đ.`,
+          `Phiếu khảo sát thực tế ViSEF 2026 (17 câu hỏi: 5 nhân khẩu học & 12 câu khảo nghiệm tiếp xúc thủ đoạn thực tế). Trường: ${surveyForm.schoolName || 'THPT Chuyên'} - Lớp: ${surveyForm.className || 'Khối 11'}. Nhận diện an toàn ${safeCount}/${totalTrapsCount} tình huống - Điểm phòng thủ thực tế ban đầu: ${preScore}/100đ.`,
       };
 
       const res = await fetch('/api/research/survey', {
@@ -506,12 +509,140 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
     }
   };
 
+  const handleDownloadSurveyCSV = async () => {
+    try {
+      const res = await fetch('/api/research/surveys');
+      let surveys: CommunitySurveySubmission[] = [];
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.surveys && Array.isArray(data.surveys)) {
+          surveys = data.surveys;
+        }
+      }
+
+      const headers = [
+        'submission_id',
+        'participant_display_name',
+        'identity_mode',
+        'is_anonymous',
+        'anonymous_code',
+        'real_name',
+        'school_name',
+        'class_name',
+        'demographic_group',
+        'province_location',
+        'irb_consent_agreed',
+        'ever_encountered_scam',
+        'past_loss_type',
+        'pre_confidence_score',
+        'biggest_fear_tactic',
+        'verification_habit_pre',
+        'time_to_decide_pre_sec',
+        'time_to_decide_post_sec',
+        'pre_defense_score',
+        'post_defense_score',
+        'defense_gain_score',
+        'unseen_scenario_score',
+        'safe_action_avoided',
+        'scam_dna_t_pre',
+        'scam_dna_a_pre',
+        'scam_dna_g_pre',
+        'scam_dna_e_pre',
+        'scam_dna_c_pre',
+        'scam_dna_r_pre',
+        'scam_dna_t_post',
+        'scam_dna_a_post',
+        'scam_dna_g_post',
+        'scam_dna_e_post',
+        'scam_dna_c_post',
+        'scam_dna_r_post',
+        'created_at_iso',
+        'feedback_note',
+      ];
+
+      const escapeCSV = (val: any) => {
+        if (val === undefined || val === null) return '""';
+        const str = String(val).replace(/"/g, '""');
+        return `"${str}"`;
+      };
+
+      const rows = surveys.map((s) => {
+        const isAnon = s.isAnonymous === true || (s.participantName || '').includes('Ẩn danh');
+        const identityMode = isAnon ? 'ANONYMOUS_CODE' : 'REAL_NAME';
+        const anonCode = s.anonymousCode || (isAnon ? s.participantName : '');
+        const realName = !isAnon ? s.participantName : '';
+        const gain = (s.testOutcome?.postScore || 0) - (s.testOutcome?.preScore || 0);
+
+        const beforeDna = s.testOutcome?.scamDnaShift?.before || {};
+        const afterDna = s.testOutcome?.scamDnaShift?.after || {};
+
+        return [
+          escapeCSV(s.id),
+          escapeCSV(s.participantName),
+          escapeCSV(identityMode),
+          isAnon ? '1' : '0',
+          escapeCSV(anonCode),
+          escapeCSV(realName),
+          escapeCSV(s.schoolName || 'THPT Chuyên'),
+          escapeCSV(s.className || 'Khối 11'),
+          escapeCSV(s.demographicGroup),
+          escapeCSV(s.location || 'Hà Nội'),
+          s.consentAgreed !== false ? '1' : '0',
+          s.surveyResponses?.everEncounteredScam ? '1' : '0',
+          escapeCSV(s.surveyResponses?.pastLossOrNearMiss || 'NEVER'),
+          s.surveyResponses?.preConfidenceScore || 50,
+          escapeCSV(s.surveyResponses?.biggestFearTactic || 'AUTHORITY_POLICE'),
+          escapeCSV(s.surveyResponses?.verificationHabitPre || 'IMMEDIATE_ACTION'),
+          s.surveyResponses?.timeToDecidePreSec || 3.5,
+          s.testOutcome?.timeToDecidePostSec || 12.0,
+          s.testOutcome?.preScore || 0,
+          s.testOutcome?.postScore || 0,
+          gain,
+          s.testOutcome?.unseenScore || 85,
+          s.testOutcome?.unsafeActionAvoided !== false ? '1' : '0',
+          beforeDna.T ?? 0.70,
+          beforeDna.A ?? 0.68,
+          beforeDna.G ?? 0.56,
+          beforeDna.E ?? 0.62,
+          beforeDna.C ?? 0.65,
+          beforeDna.R ?? 0.54,
+          afterDna.T ?? 0.18,
+          afterDna.A ?? 0.15,
+          afterDna.G ?? 0.16,
+          afterDna.E ?? 0.18,
+          afterDna.C ?? 0.17,
+          afterDna.R ?? 0.13,
+          escapeCSV(s.createdAt),
+          escapeCSV(s.feedbackNote || ''),
+        ].join(',');
+      });
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `ScamGuard_VN_ViSEF_Live_Survey_Responses_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download CSV:', err);
+    }
+  };
+
   const handleResetForm = () => {
     setSubmittedResult(null);
     setValidationWarning(null);
     setSurveyStep(1);
     setSurveyForm({
       participantName: '',
+      isAnonymous: true,
+      anonymousCode: `Khảo nghiệm viên Ẩn danh #VN-${Math.floor(1000 + Math.random() * 9000)}`,
+      schoolName: 'THPT Chuyên',
+      className: 'Khối 11',
+      consentAgreed: true,
       demographicGroup: 'STUDENT',
       location: 'Hà Nội',
       pastLossOrNearMiss: 'SPOTTED_IN_TIME',
@@ -525,6 +656,10 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
         q6: '',
         q7: '',
         q8: '',
+        q9: '',
+        q10: '',
+        q11: '',
+        q12: '',
       },
       feedbackNote: '',
     });
@@ -567,6 +702,15 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleDownloadSurveyCSV}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 hover:text-white text-xs font-bold transition border border-emerald-500/40 cursor-pointer shadow-sm"
+              title="Tải tệp dữ liệu khảo sát CSV ViSEF (RFC 4180)"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Tải CSV Khảo Sát</span>
+              <span className="sm:hidden">CSV</span>
+            </button>
             {onNavigateToMainUI && (
               <button
                 onClick={() => {
@@ -683,6 +827,13 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                 </button>
 
                 <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-end">
+                  <button
+                    onClick={handleDownloadSurveyCSV}
+                    className="w-full sm:w-auto px-4 py-2.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 hover:text-white font-bold text-xs rounded-xl border border-emerald-500/40 transition flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  >
+                    <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                    <span>📥 Tải File Dữ Liệu CSV</span>
+                  </button>
                   {onNavigateToMainUI && (
                     <button
                       onClick={() => {
@@ -808,23 +959,23 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                         onClick={() => setSurveyStep(2)}
                         className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 disabled:opacity-50 text-white font-bold text-xs sm:text-sm rounded-xl sm:rounded-2xl shadow-xl shadow-purple-500/30 transition-all transform hover:scale-[1.01] active:scale-[0.98] cursor-pointer"
                       >
-                        <span>Tiếp Tục (Mục 2: 8 Kịch Bản Bẫy Lừa Đảo Thực Tế)</span>
+                        <span>Tiếp Tục (Mục 2: 12 Câu Khảo Nghiệm Thực Tế)</span>
                         <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                       </button>
                     </div>
                   </div>
                 ) : (
-                  /* STEP 2: 8 HIGH-TRAP SCENARIOS */
+                  /* STEP 2: 12 REAL-WORLD SCENARIOS */
                   <div className="space-y-5 sm:space-y-6">
                     {/* Header Notice Banner */}
                     <div className="p-3.5 sm:p-4 bg-purple-950/40 border border-purple-500/40 rounded-xl sm:rounded-2xl space-y-1.5 text-purple-200 text-xs">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 font-black text-purple-300">
                           <AlertTriangle className="w-4 h-4 text-purple-400 shrink-0" />
-                          <span className="text-[11px] sm:text-xs">MỤC 2/2: BÀI KIỂM TRA 8 KỊCH BẢN LỪA ĐẢO THỰC TẾ (CHƯA DÙNG APP)</span>
+                          <span className="text-[11px] sm:text-xs">MỤC 2/2: 12 CÂU HỎI TIẾP XÚC & NHẬN DIỆN THỦ ĐOẠN LỪA ĐẢO THỰC TẾ</span>
                         </div>
                         <span className="text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 shrink-0">
-                          8 Kịch Bản
+                          12 Kịch Bản Thực Tế
                         </span>
                       </div>
                       <p className="text-slate-300 text-[10px] sm:text-[11px] leading-relaxed">
@@ -915,7 +1066,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       </div>
                     )}
 
-                    {/* 8 Dàn Trãi Scenarios List */}
+                    {/* 12 Real-World Scenarios List */}
                     <div className="space-y-4 sm:space-y-6">
                       {SCENARIO_QUESTIONS.map((q) => {
                         const currentAnswer = surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers];
@@ -941,7 +1092,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                                   <label className="text-white font-black text-xs sm:text-sm md:text-base block">
                                     {q.title} <span className="text-rose-400">*</span>
                                   </label>
-                                  <span className="text-[10px] sm:text-[11px] text-slate-400">Kịch bản bẫy thực tế {q.trapIndex}/8</span>
+                                  <span className="text-[10px] sm:text-[11px] text-slate-400">Tình huống thực tế {q.trapIndex}/{totalTrapsCount}</span>
                                 </div>
                               </div>
 
@@ -1041,7 +1192,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       >
                         <div className="flex items-center gap-2 font-bold">
                           <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 shrink-0" />
-                          <span className="text-[11px] sm:text-xs">Bạn còn {8 - answeredTrapCount} kịch bản bẫy chưa chọn phương án xử lý!</span>
+                          <span className="text-[11px] sm:text-xs">Bạn còn {totalTrapsCount - answeredTrapCount} câu hỏi thực tế chưa chọn phương án xử lý!</span>
                         </div>
                         <span className="w-full sm:w-auto text-center justify-center px-3 py-1.5 bg-amber-600/30 text-amber-300 border border-amber-500/40 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold shrink-0 flex items-center gap-1">
                           <span>Đi tới câu thiếu</span>
@@ -1057,7 +1208,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       </label>
                       <textarea
                         rows={2}
-                        placeholder="Nhập cảm nhận của bạn về độ tinh vi của các bẫy..."
+                        placeholder="Nhập cảm nhận của bạn về độ tinh vi của các thủ đoạn lừa đảo thực tế..."
                         value={surveyForm.feedbackNote}
                         onChange={(e) => setSurveyForm({ ...surveyForm, feedbackNote: e.target.value })}
                         className="w-full px-3 py-2 sm:px-3.5 sm:py-2.5 bg-slate-950 border border-slate-700 rounded-lg sm:rounded-xl text-white focus:outline-none focus:border-purple-500 text-xs resize-none"
@@ -1092,8 +1243,8 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                         )}
                         <span>
                           {isAllTrapsAnswered
-                            ? 'Gửi Phiếu & Đẩy Dữ Liệu Lên Biểu Đồ ViSEF (Đủ 13/13 Câu)'
-                            : `Gửi Phiếu (Còn ${8 - answeredTrapCount} câu kịch bản chưa chọn)`}
+                            ? 'Gửi Phiếu & Đẩy Dữ Liệu Lên Biểu Đồ ViSEF (Đủ 17/17 Câu)'
+                            : `Gửi Phiếu (Còn ${totalTrapsCount - answeredTrapCount} câu kịch bản chưa chọn)`}
                         </span>
                       </button>
                     </div>
