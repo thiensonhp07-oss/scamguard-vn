@@ -86,10 +86,6 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
       q6: string;
       q7: string;
       q8: string;
-      q9: string;
-      q10: string;
-      q11: string;
-      q12: string;
     };
   }>({
     participantName: 'Khảo nghiệm viên Ẩn danh #VN-8421',
@@ -115,10 +111,6 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
       q6: '',
       q7: '',
       q8: '',
-      q9: '',
-      q10: '',
-      q11: '',
-      q12: '',
     },
   });
 
@@ -171,7 +163,7 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
     if (!isAllTrapsAnswered) {
       const firstMissing = missingTraps[0];
       setValidationWarning(`Bạn còn ${totalTrapsCount - answeredTrapCount} câu kịch bản chưa chọn. Vui lòng hoàn thành câu ${firstMissing.number} để gửi phiếu!`);
-      const el = document.getElementById(`suite-trap-scenario-${firstMissing.trapIndex}`);
+      const el = document.getElementById(`suite-trap-scenario-${firstMissing.number}`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
@@ -182,16 +174,17 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
     try {
       setSubmittingSurvey(true);
       
-      // Calculate realistic baseline score based on high-trap scenario questions
+      // Calculate realistic baseline score based on 8 standardized questions
       let safeCount = 0;
       SCENARIO_QUESTIONS.forEach((q) => {
-        const chosenId = surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers];
-        if (chosenId && chosenId.endsWith('_SAFE')) {
+        const chosenLetter = surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers];
+        const opt = q.options.find((o) => o.letter === chosenLetter);
+        if (opt?.isSafeOrIdeal) {
           safeCount++;
         }
       });
 
-      const preCalcScore = Math.round((safeCount / totalTrapsCount) * 100);
+      const preCalcScore = Math.round((safeCount / Math.max(1, totalTrapsCount)) * 100);
       const postCalcScore = Math.min(100, Math.max(88, Math.round(preCalcScore + 48 + Math.random() * 6)));
       
       const displayName = surveyForm.isAnonymous
@@ -1129,7 +1122,7 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
                                 </span>
                               )}
                             </div>
-                            <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-1.5">
+                            <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
                               {SCENARIO_QUESTIONS.map((q) => {
                                 const isAnswered = !!surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers];
                                 return (
@@ -1137,7 +1130,7 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
                                     key={q.key}
                                     type="button"
                                     onClick={() => {
-                                      const el = document.getElementById(`suite-trap-scenario-${q.trapIndex}`);
+                                      const el = document.getElementById(`suite-trap-scenario-${q.number}`);
                                       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                     }}
                                     className={`py-1.5 px-2 rounded-lg text-xs font-bold font-mono transition-all flex items-center justify-center gap-1 cursor-pointer border ${
@@ -1167,7 +1160,7 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
                           </div>
                         )}
 
-                        {/* 12 Dynamic Scenario Questions List */}
+                        {/* 8 Standardized Questions List */}
                         <div className="space-y-4">
                           {SCENARIO_QUESTIONS.map((q) => {
                             const chosenVal = surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers];
@@ -1176,7 +1169,7 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
                             return (
                               <div
                                 key={q.key}
-                                id={`suite-trap-scenario-${q.trapIndex}`}
+                                id={`suite-trap-scenario-${q.number}`}
                                 className={`p-4 rounded-xl border transition-all space-y-3 ${
                                   isAnswered
                                     ? 'bg-slate-950 border-slate-800 focus-within:border-purple-500'
@@ -1192,16 +1185,18 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
                                     {q.badge}
                                   </span>
                                 </div>
-                                <div className="p-3 bg-slate-900/90 border border-slate-800 rounded-lg text-slate-300 font-mono text-[11px] leading-relaxed">
-                                  <span className="mr-1.5">{q.icon}</span>
-                                  <strong>{q.source}:</strong> "{q.content}"
-                                </div>
+                                {q.description && (
+                                  <div className="p-2.5 bg-slate-900/90 border border-slate-800 rounded-lg text-slate-300 text-[11px] leading-relaxed italic">
+                                    <span className="mr-1.5">{q.icon}</span>
+                                    {q.description}
+                                  </div>
+                                )}
                                 <div className="space-y-2">
                                   {q.options.map((opt) => (
                                     <label
-                                      key={opt.id}
+                                      key={opt.letter}
                                       className={`flex items-start gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all ${
-                                        chosenVal === opt.id
+                                        chosenVal === opt.letter
                                           ? 'bg-purple-950/40 border-purple-500 text-white'
                                           : 'bg-slate-900/60 border-slate-800 hover:border-purple-500/50 text-slate-200'
                                       }`}
@@ -1209,11 +1204,11 @@ export const ViSEFSurveyAnalyticsSuite: React.FC<ViSEFSurveyAnalyticsSuiteProps>
                                       <input
                                         type="radio"
                                         name={`suite_trap_${q.key}`}
-                                        checked={chosenVal === opt.id}
+                                        checked={chosenVal === opt.letter}
                                         onChange={() =>
                                           setSurveyForm({
                                             ...surveyForm,
-                                            trapAnswers: { ...surveyForm.trapAnswers, [q.key]: opt.id },
+                                            trapAnswers: { ...surveyForm.trapAnswers, [q.key]: opt.letter },
                                           })
                                         }
                                         className="mt-0.5 w-4 h-4 accent-purple-600 shrink-0"

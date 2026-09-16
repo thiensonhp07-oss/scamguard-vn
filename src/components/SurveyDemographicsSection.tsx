@@ -30,7 +30,7 @@ import {
   Square,
 } from 'lucide-react';
 import { SurveyConfidenceHero } from './SurveyConfidenceHero';
-import { SurveyDemographicGroup } from '../types';
+import { SurveyDemographicGroup, GradeLevel, GenderGroup, SafetyTrainingStatus } from '../types';
 
 export const VIETNAM_PROVINCES = [
   'Hà Nội',
@@ -146,6 +146,12 @@ interface SurveyDemographicsSectionProps {
   onPastLossOrNearMissChange: (val: any) => void;
   preConfidenceScore: number;
   onPreConfidenceScoreChange: (val: number) => void;
+  gradeLevel?: GradeLevel;
+  onGradeLevelChange?: (val: GradeLevel) => void;
+  gender?: GenderGroup;
+  onGenderChange?: (val: GenderGroup) => void;
+  safetyTraining?: SafetyTrainingStatus;
+  onSafetyTrainingChange?: (val: SafetyTrainingStatus) => void;
   biggestFearTactic?: 'AUTHORITY_POLICE' | 'URGENT_ACCIDENT' | 'FAKE_BILL_QR' | 'TELEGRAM_INCOME' | 'DEEPFAKE_CALL';
   onBiggestFearTacticChange?: (val: any) => void;
   idPrefix?: string;
@@ -162,6 +168,12 @@ export const SurveyDemographicsSection: React.FC<SurveyDemographicsSectionProps>
   onSchoolNameChange,
   className = 'Lớp 11 Tin',
   onClassNameChange,
+  gradeLevel = 'Khối 11',
+  onGradeLevelChange,
+  gender = 'Nam',
+  onGenderChange,
+  safetyTraining = 'Không',
+  onSafetyTrainingChange,
   consentAgreed = true,
   onConsentAgreedChange,
   demographicGroup,
@@ -638,6 +650,104 @@ export const SurveyDemographicsSection: React.FC<SurveyDemographicsSectionProps>
                     {c}
                   </button>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          {/* 3 VISEF SCHOOL RESEARCH DEMOGRAPHIC SELECTORS */}
+          <div className="pt-3 border-t border-slate-800/80 space-y-4">
+            <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Phân Tầng Khảo Sát ViSEF 2026 (Khối, Giới Tính, Tập Huấn An Toàn)</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+              {/* FIELD 1: KHỐI HỌC */}
+              <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2">
+                <label className="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Khối học / Vị trí:</span>
+                  <span className="text-rose-400">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {(['Khối 10', 'Khối 11', 'Khối 12', 'Khác / Giáo viên'] as GradeLevel[]).map((gl) => {
+                    const isSelected = gradeLevel === gl;
+                    return (
+                      <button
+                        key={gl}
+                        type="button"
+                        onClick={() => onGradeLevelChange && onGradeLevelChange(gl)}
+                        className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold transition text-left cursor-pointer border flex items-center justify-between ${
+                          isSelected
+                            ? 'bg-cyan-600/30 border-cyan-400 text-cyan-200 ring-1 ring-cyan-400/40'
+                            : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
+                        }`}
+                      >
+                        <span className="truncate">{gl}</span>
+                        {isSelected && <Check className="w-3 h-3 text-cyan-300 shrink-0 ml-1" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* FIELD 2: GIỚI TÍNH */}
+              <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2">
+                <label className="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Giới tính:</span>
+                  <span className="text-rose-400">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {(['Nam', 'Nữ', 'Khác', 'Không muốn trả lời'] as GenderGroup[]).map((g) => {
+                    const isSelected = gender === g;
+                    return (
+                      <button
+                        key={g}
+                        type="button"
+                        onClick={() => onGenderChange && onGenderChange(g)}
+                        className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold transition text-left cursor-pointer border flex items-center justify-between ${
+                          isSelected
+                            ? 'bg-purple-600/30 border-purple-400 text-purple-200 ring-1 ring-purple-400/40'
+                            : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
+                        }`}
+                      >
+                        <span className="truncate">{g}</span>
+                        {isSelected && <Check className="w-3 h-3 text-purple-300 shrink-0 ml-1" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* FIELD 3: TẬP HUẤN AN TOÀN MẠNG */}
+              <div className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl space-y-2">
+                <label className="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Đã từng học / tập huấn an toàn mạng:</span>
+                  <span className="text-rose-400">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  {(['Có', 'Không'] as SafetyTrainingStatus[]).map((st) => {
+                    const isSelected = safetyTraining === st;
+                    return (
+                      <button
+                        key={st}
+                        type="button"
+                        onClick={() => onSafetyTrainingChange && onSafetyTrainingChange(st)}
+                        className={`p-2 rounded-lg text-xs font-bold transition text-center cursor-pointer border flex items-center justify-center gap-1.5 ${
+                          isSelected
+                            ? st === 'Có'
+                              ? 'bg-emerald-600/30 border-emerald-400 text-emerald-200 ring-1 ring-emerald-400/40'
+                              : 'bg-amber-600/30 border-amber-400 text-amber-200 ring-1 ring-amber-400/40'
+                            : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white'
+                        }`}
+                      >
+                        <span>{st === 'Có' ? '✅ Đã từng (Có)' : '❌ Chưa từng (Không)'}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

@@ -256,9 +256,20 @@ export const VisefSurveyResponsesLiveTable: React.FC<VisefSurveyResponsesLiveTab
       'real_name',
       'school_name',
       'class_name',
+      'grade_level',
+      'gender',
+      'safety_training',
       'demographic_group',
       'province_location',
       'irb_consent_agreed',
+      'q1_answer',
+      'q2_answer',
+      'q3_answer',
+      'q4_answer',
+      'q5_answer',
+      'q6_answer',
+      'q7_answer',
+      'q8_answer',
       'ever_encountered_scam',
       'past_loss_type',
       'pre_confidence_score',
@@ -312,9 +323,20 @@ export const VisefSurveyResponsesLiveTable: React.FC<VisefSurveyResponsesLiveTab
         escapeCSV(realName),
         escapeCSV(s.schoolName || 'THPT Chuyên'),
         escapeCSV(s.className || 'Khối 11'),
+        escapeCSV(s.gradeLevel || 'Khối 11'),
+        escapeCSV(s.gender || 'Nam'),
+        escapeCSV(s.safetyTraining || 'Không'),
         escapeCSV(s.demographicGroup),
         escapeCSV(s.location || 'Hà Nội'),
         s.consentAgreed !== false ? '1' : '0',
+        escapeCSV(s.eightQuestionAnswers?.q1 || (s.surveyResponses?.everEncounteredScam ? 'B' : 'A')),
+        escapeCSV(s.eightQuestionAnswers?.q2 || (s.surveyResponses?.pastLossOrNearMiss === 'LOST_MONEY' ? 'D' : s.surveyResponses?.pastLossOrNearMiss === 'SHARED_OTP_PASSWORD' ? 'C' : s.surveyResponses?.pastLossOrNearMiss === 'SPOTTED_IN_TIME' ? 'B' : 'A')),
+        escapeCSV(s.eightQuestionAnswers?.q3 || 'A'),
+        escapeCSV(s.eightQuestionAnswers?.q4 || 'A'),
+        escapeCSV(s.eightQuestionAnswers?.q5 || (s.surveyResponses?.verificationHabitPre === 'DOUBLE_CHECK_OFFICIAL' ? 'C' : 'D')),
+        escapeCSV(s.eightQuestionAnswers?.q6 || (s.surveyResponses?.preConfidenceScore && s.surveyResponses.preConfidenceScore > 75 ? 'D' : 'C')),
+        escapeCSV(s.eightQuestionAnswers?.q7 || (s.testOutcome?.unsafeActionAvoided ? 'C' : 'B')),
+        escapeCSV(s.eightQuestionAnswers?.q8 || 'D'),
         s.surveyResponses?.everEncounteredScam ? '1' : '0',
         escapeCSV(s.surveyResponses?.pastLossOrNearMiss || 'NEVER'),
         s.surveyResponses?.preConfidenceScore || 50,
@@ -808,14 +830,28 @@ export const VisefSurveyResponsesLiveTable: React.FC<VisefSurveyResponsesLiveTab
 
                       {/* School & Class */}
                       <td className="py-3.5 px-4">
-                        <div className="space-y-0.5 max-w-[160px]">
+                        <div className="space-y-1 max-w-[170px]">
                           <div className="font-medium text-slate-200 truncate" title={survey.schoolName || 'THPT Chuyên'}>
                             {survey.schoolName || 'THPT Chuyên'}
                           </div>
-                          <div className="text-[10px] text-slate-400 flex items-center gap-1">
-                            <span className="px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                              {survey.className || 'Khối 11'}
+                          <div className="flex flex-wrap items-center gap-1 text-[10px]">
+                            <span className="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-medium">
+                              {survey.gradeLevel || survey.className || 'Khối 11'}
                             </span>
+                            {survey.gender && (
+                              <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                {survey.gender}
+                              </span>
+                            )}
+                            {survey.safetyTraining && (
+                              <span className={`px-1.5 py-0.5 rounded border ${
+                                survey.safetyTraining === 'Có'
+                                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                                  : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                              }`}>
+                                {survey.safetyTraining === 'Có' ? 'Đã học AT' : 'Chưa học'}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </td>

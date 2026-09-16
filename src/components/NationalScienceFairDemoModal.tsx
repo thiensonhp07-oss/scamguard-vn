@@ -40,7 +40,18 @@ import confetti from 'canvas-confetti';
 import { PersonalVsCommunityComparisonSuite } from './PersonalVsCommunityComparisonSuite';
 import { SurveyDemographicsSection } from './SurveyDemographicsSection';
 import mascotShield from '../assets/images/mascot_shield_transparent.png';
-import { CommunitySurveySubmission } from '../types';
+import {
+  CommunitySurveySubmission,
+  GradeLevel,
+  GenderGroup,
+  SafetyTrainingStatus,
+  SurveyDemographicGroup,
+} from '../types';
+import {
+  SURVEY_8_QUESTIONS,
+  calculate8QuestionDefenseScore,
+  StandardSurveyQuestion,
+} from '../data/surveyQuestions';
 
 interface NationalScienceFairDemoModalProps {
   isOpen: boolean;
@@ -117,212 +128,8 @@ const VIETNAM_PROVINCES = [
   'Khác',
 ];
 
-export const SCENARIO_QUESTIONS = [
-  {
-    key: 'q1' as const,
-    number: 1,
-    trapIndex: 1,
-    title: '1. Bạn đã từng gặp hoặc bị lừa đảo qua tin nhắn / cuộc gọi giả mạo Dịch Vụ Công, Công An dọa khóa CCCD và VNeID chưa?',
-    badge: 'Mạo Danh Chính Quyền & Dọa Nạt',
-    badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-    icon: '💬',
-    source: 'Kịch bản thực tế: SMS Brandname DICHVUCONG hoặc cuộc gọi dọa khóa CCCD / VNeID cấp 2',
-    content: 'Tin nhắn SMS Brandname hoặc cuộc gọi dọa: "Hồ sơ định danh VNeID của bạn bị lỗi đồng bộ dữ liệu dân cư, tài khoản ngân hàng sẽ bị phong tỏa lúc 24h00. Bấm vào link dichvucong-gov-vn.cc để cập nhật ngay hoặc gọi hotline khẩn cấp".',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi và người thân chưa từng nhận được tin nhắn hay cuộc gọi dọa khóa CCCD kiểu này.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Có gặp nhưng tôi nhận ra ngay dấu hiệu lừa đảo và không làm theo.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Liên tục nhận được tin nhắn/cuộc gọi làm phiền nhưng tôi cảnh giác bỏ qua.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Tôi hoặc người thân từng lo sợ bấm link, làm theo hướng dẫn hoặc từng bị lừa mất tiền.' },
-    ],
-  },
-  {
-    key: 'q2' as const,
-    number: 2,
-    trapIndex: 2,
-    title: '2. Bạn đã từng gặp hoặc bị lừa đảo qua chiêu trò "Chuyển khoản nhầm" tiền vào tài khoản rồi ép trả nợ lãi cao chưa?',
-    badge: 'Bẫy Rửa Tiền & Tín Dụng Đen',
-    badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-    icon: '🏦',
-    source: 'Kịch bản thực tế: Nhận tiền lạ bất ngờ, có người khóc lóc giục chuyển lại sang STK khác',
-    content: 'Tài khoản bất ngờ nhận được 3 - 10 triệu đồng kèm nội dung chuyển tiền lạ. Sau đó có người lạ gọi điện khóc lóc xin chuyển trả gấp sang tài khoản khác hoặc gửi link web ngân hàng yêu cầu nhập thông tin tra soát.',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tài khoản của tôi chưa từng có người lạ chuyển nhầm tiền bất thường.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Từng nhận tiền lạ nhưng tôi cảnh giác báo ngân hàng tra soát, không tự ý chuyển tiền đi.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Quanh tôi gặp liên tục; tôi luôn dặn mọi người giữ nguyên tiền chờ ngân hàng xử lý.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng cuống cuồng chuyển trả ngay vào STK người lạ yêu cầu hoặc bị vu khống ép trả nợ.' },
-    ],
-  },
-  {
-    key: 'q3' as const,
-    number: 3,
-    trapIndex: 3,
-    title: '3. Bạn đã từng gặp hoặc bị lừa đảo qua cuộc gọi Video Call Deepfake AI giả mặt và giọng người thân vay tiền chưa?',
-    badge: 'Deepfake AI Khuôn Mặt & Giọng Nói',
-    badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
-    icon: '📹',
-    source: 'Kịch bản thực tế: Video call Zalo/Messenger chập chờn 5 giây, đúng mặt bạn bè mượn tiền gấp',
-    content: 'Kẻ gian gọi video Messenger 5-10 giây hiện khuôn mặt và giọng nói của người thân kêu đang đi viện cấp cứu/tai nạn xe cộ, giục chuyển tiền gấp vào STK lạ của bác sĩ rồi cúp máy bảo mạng yếu.',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận cuộc gọi video nào có biểu hiện AI giả mạo như vậy.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Thấy hình giật méo và tài khoản nhận tiền lạ nên tôi gọi điện thoại di động trực tiếp để kiểm chứng.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Nhóm bạn và người thân trong gia đình tôi bị hack nick gọi vay tiền liên tục nhưng tôi luôn cảnh giác.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng tin tưởng chuyển tiền cho cuộc gọi video giả mạo người thân hoặc suýt chuyển tiền.' },
-    ],
-  },
-  {
-    key: 'q4' as const,
-    number: 4,
-    trapIndex: 4,
-    title: '4. Bạn đã từng gặp hoặc bị lừa đảo qua tin nhắn phạt nguội giao thông hoặc dụ cài tệp ứng dụng .APK lạ chưa?',
-    badge: 'Mã Độc Chiếm Quyền Trợ Năng (.APK)',
-    badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-    icon: '🚗',
-    source: 'Kịch bản thực tế: Tin nhắn dọa tịch thu bằng lái, yêu cầu tải bienban_phatnguoi.apk về điện thoại',
-    content: 'Tin nhắn gửi tới: "Phương tiện của bạn vi phạm vượt đèn đỏ bị camera phạt nguội, bấm vào link tải tệp phatnguoi_giaothong.apk để xem hình ảnh và nộp phạt online trước ngày 20 để không bị cưỡng chế".',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận được tin nhắn tra cứu phạt nguội kèm link tải tệp lạ.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Thỉnh thoảng có nhận SMS phạt nguội nhưng tôi xóa ngay, không bao giờ tải file.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Điện thoại tôi liên tục nhận SMS rác mạo danh CSGT, cơ quan thuế nhưng tôi không mở.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng tải tệp .APK về máy, bị chiếm quyền điều khiển điện thoại hoặc bị trừ tiền ngân hàng.' },
-    ],
-  },
-  {
-    key: 'q5' as const,
-    number: 5,
-    trapIndex: 5,
-    title: '5. Bạn đã từng gặp hoặc bị lừa đảo qua lời mời làm CTV Online xem video, giật đơn hàng rồi dụ nạp tiền chưa?',
-    badge: 'Tuyển Dụng Ảo & Bẫy Nhiệm Vụ Nạp Cọc',
-    badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-    icon: '📱',
-    source: 'Kịch bản thực tế: Nhắn tin Telegram/Zalo tuyển việc nhẹ lương 500k/ngày, giật đơn tăng tiền nạp',
-    content: 'Được thêm vào nhóm: "Tuyển CTV đánh giá sản phẩm Shopee/TikTok làm tại nhà 30-60 phút kiếm 300k - 1 triệu/ngày". Ban đầu làm nhiệm vụ xem video nhận thật 50k, sau đó yêu cầu nạp tiền mua gói nhiệm vụ lớn hơn để rút hoa hồng 40% rồi giam tiền.',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng được nhắn tin hay bị kéo vào các nhóm tuyển việc làm online như thế.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Thấy chiêu trò việc nhẹ lương cao nạp tiền cọc là tôi chặn ngay lập tức, không tham gia.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Cứ vài ngày lại bị add vào nhóm Zalo/Telegram tuyển CTV hoặc nhận tin nhắn chào việc nhưng tôi đều thoát.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng nạp tiền làm nhiệm vụ và bị giam tiền không rút ra được hoặc suýt nạp số tiền lớn.' },
-    ],
-  },
-  {
-    key: 'q6' as const,
-    number: 6,
-    trapIndex: 6,
-    title: '6. Bạn đã từng gặp hoặc bị lừa đảo qua mã QR thanh toán bị dán đè hoặc quét mã QR dẫn đến trang web lạ chưa?',
-    badge: 'Tấn Công Mã QR Độc Hại (Quishing)',
-    badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-    icon: '☕',
-    source: 'Kịch bản thực tế: Quét mã QR thanh toán trên bàn ăn dẫn tới trang web giả hoặc STK kẻ gian dán đè',
-    content: 'Khi thanh toán tiền tại bàn hoặc quầy gửi xe, quét mã QR bất ngờ mở ra một trang web yêu cầu nhập thông tin đăng nhập ngân hàng/OTP, hoặc tên người thụ hưởng trên app ngân hàng khác hoàn toàn với tên quán.',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Mọi mã QR tôi quét tại quán đều đúng thông tin và an toàn.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Từng quét phải mã lạ nhưng tôi nhìn thấy tên người thụ hưởng sai lệch nên dừng lại hỏi nhân viên ngay.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Thấy nhiều quán bị dán đè QR và trên mạng cảnh báo liên tục nên tôi luôn kiểm tra tên cực kỳ kỹ.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng chuyển nhầm tiền cho mã QR bị dán đè hoặc bị đánh cắp tài khoản khi quét mã QR lạ.' },
-    ],
-  },
-  {
-    key: 'q7' as const,
-    number: 7,
-    trapIndex: 7,
-    title: '7. Bạn đã từng gặp hoặc bị lừa đảo qua cuộc gọi tự xưng Công an, Viện Kiểm Sát dọa bắt giam, ép chuyển tiền chưa?',
-    badge: 'Thao Túng Tâm Lý & Áp Lực Bắt Giam',
-    badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-    icon: '📞',
-    source: 'Kịch bản thực tế: Giọng nói đanh thép, dọa gửi lệnh bắt giam qua Zalo, ép chuyển tiền vào tài khoản tạm giữ',
-    content: 'Kẻ xưng là điều tra viên Bộ Công an: "Tài khoản của anh/chị đang dính vào đường dây buôn ma túy và rửa tiền xuyên quốc gia. Yêu cầu giữ bí mật tuyệt đối, đến nơi yên tĩnh và chuyển toàn bộ tiền tiết kiệm vào tài khoản kiểm toán của cơ quan điều tra".',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận được cuộc gọi dọa bắt giam hay điều tra án mạng nào.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi biết Công an chỉ gửi giấy mời trực tiếp chứ không làm việc qua điện thoại nên tắt máy ngay.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Tuần nào cũng có số lạ gọi dọa liên quan tới hồ sơ tội phạm, tôi dập máy luôn không sợ.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Nghe giọng quát nạt quá chân thực khiến tôi run sợ, từng suýt khai báo hoặc đã chuyển tiền vào tài khoản kẻ gian.' },
-    ],
-  },
-  {
-    key: 'q8' as const,
-    number: 8,
-    trapIndex: 8,
-    title: '8. Bạn đã từng gặp hoặc bị lừa đảo qua cuộc gọi giao kiện hàng COD ảo lạ hoắc bắt chuyển tiền khi vắng nhà chưa?',
-    badge: 'Bẫy Kiện Hàng COD Ảo Giá Trị Nhỏ',
-    badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-    icon: '📦',
-    source: 'Kịch bản thực tế: Gói hàng 80k-150k nhét vào cổng khi vắng nhà, giục chuyển khoản trước',
-    content: 'Shipper gọi điện: "Anh/chị có gói hàng tri ân khách hàng COD 120k, em đến mà anh vắng nhà nên em gửi bác bảo vệ/nhét qua khe cửa nhé, anh chuyển tiền vào STK này giúp em". Trong khi bạn không nhớ rõ mình đã đặt món gì.',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Các đơn hàng ship đến tôi đều nắm rõ lịch trình trên ứng dụng mua sắm.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi kiểm tra lại lịch sử đơn hàng trên app thấy không có nên kiên quyết từ chối nhận và không chuyển tiền.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Thường xuyên có các gói bưu phẩm lạ không rõ người gửi giao tới nhà thu tiền vặt nhưng tôi từ chối.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng chuyển khoản 100k-200k nhận hộ người nhà, mở ra chỉ là giấy rác vụn không giá trị.' },
-    ],
-  },
-  {
-    key: 'q9' as const,
-    number: 9,
-    trapIndex: 9,
-    title: '9. Bạn đã từng gặp hoặc bị lừa đảo qua thông báo trúng thưởng xe máy, điện thoại hoặc hoàn thuế đòi nộp phí trước chưa?',
-    badge: 'Bẫy Tham Lam / Trúng Thưởng Ảo',
-    badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-    icon: '📑',
-    source: 'Kịch bản thực tế: Thông báo trúng xe SH/tiền hoàn thuế, yêu cầu nộp trước phí làm hồ sơ 10%',
-    content: 'Tin nhắn/email gửi đến: "Chúc mừng số điện thoại của bạn đã may mắn trúng thưởng 01 xe máy Honda SH 150i trị giá 90 triệu đồng. Để nhận giải, vui lòng truy cập trang web và nộp khoản lệ phí trước bạ 2.500.000đ vào tài khoản ban tổ chức".',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận được bất kỳ thông báo trúng thưởng hay hoàn tiền thuế bất thường nào.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi không tham gia quay số trúng thưởng nên biết chắc là trò lừa đảo đòi tiền phí và bỏ qua ngay.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Tin nhắn trúng thưởng xe, hoàn tiền thuế, quà tặng thương hiệu gửi vào máy tôi liên miên nhưng tôi không tin.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng háo hức liên hệ ban tổ chức, suýt nộp tiền phí vận chuyển hoặc từng bị lừa mất tiền cọc.' },
-    ],
-  },
-  {
-    key: 'q10' as const,
-    number: 10,
-    trapIndex: 10,
-    title: '10. Bạn đã từng gặp hoặc bị lừa đảo qua dịch vụ quảng cáo "Hỗ trợ kéo lại tiền bị lừa mạng" rồi bắt đóng phí cọc chưa?',
-    badge: 'Bẫy Lừa Đảo Kép (Recovery Scam)',
-    badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-    icon: '⚖️',
-    source: 'Kịch bản thực tế: Fanpage tự xưng Luật sư an ninh mạng cam kết lấy lại tiền treo 100%, đòi nộp phí trước',
-    content: 'Quảng cáo trên Facebook/TikTok: "Văn phòng Luật sư liên kết Cục An ninh mạng cam kết thu hồi 100% tiền bị lừa qua Telegram/app đầu tư bằng thuật toán Blockchain. Nạn nhân chỉ cần nộp 10% phí đặt cọc làm việc hoặc phí mở cổng tra soát".',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng thấy hoặc quan tâm tới các bài quảng cáo dịch vụ thu hồi tiền lừa đảo này.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi biết thừa đây là chiêu trò lừa đảo bồi thêm một vố nữa vào nạn nhân nên cảnh báo bạn bè tránh xa.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Lướt mạng xã hội là thấy hàng loạt bài viết chạy quảng cáo lấy lại tiền lừa đảo tràn lan nhưng tôi lướt qua.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Người thân hoặc tôi từng nóng ruột muốn gỡ lại tiền nên đã nhắn tin nhờ vả và bị lừa đóng thêm tiền phí.' },
-    ],
-  },
-  {
-    key: 'q11' as const,
-    number: 11,
-    trapIndex: 11,
-    title: '11. Bạn đã từng gặp hoặc bị lừa đảo qua tin nhắn mạo danh Facebook dọa xóa Fanpage vì vi phạm bản quyền chưa?',
-    badge: 'Bẫy Phishing Đánh Cắp Tài Khoản & 2FA',
-    badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
-    icon: '🛡️',
-    source: 'Kịch bản thực tế: Mạo danh Meta Support dọa xóa Page trong 24h, yêu cầu nhập mật khẩu và mã OTP 2FA',
-    content: 'Tin nhắn gửi đến hộp thư Facebook: "Trang cá nhân/Fanpage của bạn bị khiếu nại bản quyền nghiêm trọng và sẽ bị xóa vĩnh viễn sau 24 giờ. Vui lòng bấm vào liên kết meta-support-appeal.me để gửi đơn kháng cáo kèm mật khẩu và mã 2FA".',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Hộp thư Facebook của tôi chưa từng nhận cảnh báo bản quyền giả mạo như vậy.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi nhìn đuôi tên miền không phải của facebook.com nên không bao giờ bấm vào link.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Mỗi tuần Fanpage của tôi nhận hàng chục tin nhắn rác dọa xóa trang từ các tài khoản giả Meta nhưng tôi xóa ngay.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Từng lo sợ bị mất trang làm ăn nên đã bấm link, điền mật khẩu và mã 2FA dẫn đến mất quyền quản trị.' },
-    ],
-  },
-  {
-    key: 'q12' as const,
-    number: 12,
-    trapIndex: 12,
-    title: '12. Bạn đã từng gặp hoặc bị lừa đảo qua cuộc gọi tự động dọa khóa SIM điện thoại sau 2 tiếng để lừa lấy mã OTP chưa?',
-    badge: 'Khóa SIM Ảo & Đánh Cắp Mã OTP',
-    badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
-    icon: '⚡',
-    source: 'Kịch bản thực tế: Cuộc gọi tự động dọa khóa số 2 chiều sau 2h, yêu cầu bấm phím 1 gặp nhân viên',
-    content: 'Tổng đài tự động gọi: "Số thuê bao của quý khách chưa chuẩn hóa thông tin cá nhân và sẽ bị khóa liên lạc 2 chiều sau 2 giờ nữa. Bấm phím 1 để gặp nhân viên hỗ trợ", sau đó yêu cầu đọc số CCCD và mã OTP gửi về máy để cập nhật.',
-    options: [
-      { id: 'A_NEVER_SAFE', letter: 'A', text: 'Chưa từng gặp bao giờ — Tôi chưa từng nhận cuộc gọi dọa khóa SIM điện thoại tự động như thế này.' },
-      { id: 'B_RARE_SAFE', letter: 'B', text: 'Đã từng gặp ít (1 - 2 lần / Thỉnh thoảng) — Tôi biết nhà mạng chỉ thông báo bằng tin nhắn Brandname chứ không gọi dọa ngắt máy nên tắt luôn.' },
-      { id: 'C_OFTEN_SAFE', letter: 'C', text: 'Đã từng gặp rất nhiều lần (Thường xuyên) — Điện thoại tôi liên tục có các số bàn hoặc số lạ gọi đến phát đoạn ghi âm dọa khóa SIM nhưng tôi không làm theo.' },
-      { id: 'D_VICTIM_TRAP', letter: 'D', text: 'Đã từng bị lừa đảo theo cách này — Tôi sợ mất số liên lạc quan trọng nên đã bấm phím 1 và suýt đọc mã OTP hoặc đã bị cướp SIM/tiền ngân hàng.' },
-    ],
-  },
-];
+// 8 Standardized ABCD Survey Questions for ViSEF Scientific Evaluation
+export const SCENARIO_QUESTIONS = SURVEY_8_QUESTIONS;
 
 export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModalProps> = ({
   isOpen,
@@ -337,45 +144,41 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
   const [liveTotalRespondents, setLiveTotalRespondents] = useState<number>(0);
   const [validationWarning, setValidationWarning] = useState<string | null>(null);
 
-  // 13 Full Survey Questions State (5 Demographics + 8 Real Traps)
+  // Survey Form State (Demographics + 8 Standardized ABCD Questions)
   const [surveyForm, setSurveyForm] = useState({
-    // Q1: Name & Anonymous Mode
+    // Identity & Consent
     participantName: 'Khảo nghiệm viên Ẩn danh #VN-8421',
     isAnonymous: true,
     anonymousCode: 'Khảo nghiệm viên Ẩn danh #VN-8421',
     schoolName: 'THPT Chuyên Lê Hồng Phong',
     className: 'Lớp 11 Tin',
     consentAgreed: true,
-    // Q2: Demographic
-    demographicGroup: 'STUDENT',
-    // Q3: Location
+    // School Demographics
+    demographicGroup: 'STUDENT' as SurveyDemographicGroup,
+    gradeLevel: 'Khối 11' as GradeLevel,
+    gender: 'Nam' as GenderGroup,
+    safetyTraining: 'Không' as SafetyTrainingStatus,
     location: 'Hà Nội',
-    // Q4: Past Experience
     pastLossOrNearMiss: 'SPOTTED_IN_TIME',
-    // Q5: Pre-Confidence Score (10-100)
     preConfidenceScore: 50,
-    // 12 High-Difficulty Real-World Traps (Q6 to Q17) - Khởi tạo rỗng để người tham gia tự chọn
-    trapAnswers: {
-      q1: '',
-      q2: '',
-      q3: '',
-      q4: '',
-      q5: '',
-      q6: '',
-      q7: '',
-      q8: '',
-      q9: '',
-      q10: '',
-      q11: '',
-      q12: '',
+    // 8 Standardized ABCD Questions (Q1 to Q8)
+    eightQuestionAnswers: {
+      q1: '' as 'A' | 'B' | 'C' | 'D' | '',
+      q2: '' as 'A' | 'B' | 'C' | 'D' | '',
+      q3: '' as 'A' | 'B' | 'C' | 'D' | '',
+      q4: '' as 'A' | 'B' | 'C' | 'D' | '',
+      q5: '' as 'A' | 'B' | 'C' | 'D' | '',
+      q6: '' as 'A' | 'B' | 'C' | 'D' | '',
+      q7: '' as 'A' | 'B' | 'C' | 'D' | '',
+      q8: '' as 'A' | 'B' | 'C' | 'D' | '',
     },
     feedbackNote: '',
   });
 
   const totalTrapsCount = SCENARIO_QUESTIONS.length;
-  const answeredTrapCount = Object.values(surveyForm.trapAnswers).filter(Boolean).length;
+  const answeredTrapCount = Object.values(surveyForm.eightQuestionAnswers).filter(Boolean).length;
   const isAllTrapsAnswered = answeredTrapCount === totalTrapsCount;
-  const missingTraps = SCENARIO_QUESTIONS.filter((q) => !surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers]);
+  const missingTraps = SCENARIO_QUESTIONS.filter((q) => !surveyForm.eightQuestionAnswers[q.key as keyof typeof surveyForm.eightQuestionAnswers]);
 
   useEffect(() => {
     if (isOpen) {
@@ -395,11 +198,11 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
   const handleSubmitSurvey = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Kiểm tra xem đã hoàn thành đủ tất cả kịch bản bẫy chưa
+    // Kiểm tra xem đã hoàn thành đủ tất cả 8 câu khảo sát chưa
     if (!isAllTrapsAnswered) {
       const firstMissing = missingTraps[0];
-      setValidationWarning(`Bạn còn ${totalTrapsCount - answeredTrapCount} câu kịch bản chưa chọn. Vui lòng hoàn thành câu ${firstMissing.number} để gửi phiếu!`);
-      const el = document.getElementById(`trap-scenario-${firstMissing.trapIndex}`);
+      setValidationWarning(`Bạn còn ${totalTrapsCount - answeredTrapCount} câu khảo sát chưa chọn. Vui lòng hoàn thành câu ${firstMissing.number} để gửi phiếu!`);
+      const el = document.getElementById(`trap-scenario-${firstMissing.number}`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
@@ -410,26 +213,17 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
     setSubmitting(true);
 
     try {
-      // Calculate realistic baseline score and distribution based on 12 practical encounter questions
+      const answers = surveyForm.eightQuestionAnswers;
+      const preScore = calculate8QuestionDefenseScore(answers);
+      const postScore = Math.min(100, Math.max(88, Math.round(preScore + 40 + Math.random() * 6)));
+
+      // Count safe / ideal options chosen
       let safeCount = 0;
-      let neverCount = 0;
-      let rareCount = 0;
-      let oftenCount = 0;
-      let victimCount = 0;
-
       SCENARIO_QUESTIONS.forEach((q) => {
-        const chosenId = surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers];
-        if (chosenId && chosenId.endsWith('_SAFE')) {
-          safeCount++;
-        }
-        if (chosenId?.includes('NEVER')) neverCount++;
-        else if (chosenId?.includes('RARE') || chosenId?.includes('SPOTTED')) rareCount++;
-        else if (chosenId?.includes('OFTEN')) oftenCount++;
-        else if (chosenId?.includes('VICTIM') || chosenId?.endsWith('_TRAP')) victimCount++;
+        const chosen = answers[q.key as keyof typeof answers];
+        const opt = q.options.find((o) => o.letter === chosen);
+        if (opt?.isSafeOrIdeal) safeCount++;
       });
-
-      const preScore = Math.round((safeCount / totalTrapsCount) * 100);
-      const postScore = Math.min(100, Math.max(88, Math.round(preScore + 48 + Math.random() * 6)));
 
       const displayName = surveyForm.isAnonymous
         ? (surveyForm.anonymousCode?.trim() || 'Khảo nghiệm viên Ẩn danh')
@@ -443,12 +237,25 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
         className: surveyForm.className,
         consentAgreed: surveyForm.consentAgreed,
         demographicGroup: surveyForm.demographicGroup,
+        gradeLevel: surveyForm.gradeLevel,
+        gender: surveyForm.gender,
+        safetyTraining: surveyForm.safetyTraining,
         location: surveyForm.location,
+        eightQuestionAnswers: {
+          q1: answers.q1,
+          q2: answers.q2,
+          q3: answers.q3,
+          q4: answers.q4,
+          q5: answers.q5,
+          q6: answers.q6,
+          q7: answers.q7,
+          q8: answers.q8,
+        },
         surveyResponses: {
-          everEncounteredScam: surveyForm.pastLossOrNearMiss !== 'NEVER',
-          pastLossOrNearMiss: surveyForm.pastLossOrNearMiss,
+          everEncounteredScam: answers.q1 !== 'A',
+          pastLossOrNearMiss: answers.q2 === 'D' ? 'LOST_MONEY' : answers.q2 === 'C' ? 'GAVE_DATA' : answers.q2 === 'B' ? 'NEAR_MISS' : 'NEVER',
           preConfidenceScore: surveyForm.preConfidenceScore,
-          biggestFearTactic: 'AUTHORITY_POLICE',
+          biggestFearTactic: answers.q4 === 'A' ? 'IMPERSONATION' : answers.q4 === 'B' ? 'TASK_SCAM' : answers.q4 === 'C' ? 'DEEPFAKE' : 'OTHER',
           verificationHabitPre: 'DOUBLE_CHECK_OFFICIAL',
           timeToDecidePreSec: 4.5,
         },
@@ -460,19 +267,19 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
           timeToDecidePostSec: 11.5,
           scamDnaShift: {
             before: {
-              T: (surveyForm.trapAnswers.q1?.endsWith('_TRAP') || surveyForm.trapAnswers.q4?.endsWith('_TRAP')) ? 0.88 : 0.20,
-              A: (surveyForm.trapAnswers.q1?.endsWith('_TRAP') || surveyForm.trapAnswers.q7?.endsWith('_TRAP')) ? 0.84 : 0.18,
-              G: (surveyForm.trapAnswers.q6?.endsWith('_TRAP') || surveyForm.trapAnswers.q8?.endsWith('_TRAP')) ? 0.85 : 0.22,
-              E: (surveyForm.trapAnswers.q2?.endsWith('_TRAP') || surveyForm.trapAnswers.q3?.endsWith('_TRAP')) ? 0.90 : 0.15,
-              C: (surveyForm.trapAnswers.q5?.endsWith('_TRAP') || surveyForm.trapAnswers.q11?.endsWith('_TRAP')) ? 0.82 : 0.16,
-              R: (surveyForm.trapAnswers.q10?.endsWith('_TRAP') || surveyForm.trapAnswers.q12?.endsWith('_TRAP')) ? 0.86 : 0.14,
+              T: answers.q1 === 'D' ? 0.88 : 0.40,
+              A: answers.q4 === 'A' ? 0.85 : 0.35,
+              G: answers.q4 === 'D' ? 0.80 : 0.30,
+              E: answers.q4 === 'B' ? 0.85 : 0.30,
+              C: answers.q4 === 'C' ? 0.88 : 0.35,
+              R: answers.q2 === 'D' ? 0.90 : 0.32,
             },
             after: { T: 0.14, A: 0.12, G: 0.13, E: 0.15, C: 0.14, R: 0.10 },
           },
         },
         feedbackNote:
           surveyForm.feedbackNote ||
-          `Phiếu khảo sát thực tế ViSEF 2026 (17 câu: 5 nhân khẩu học & 12 câu khảo nghiệm tiếp xúc thủ đoạn thực tế). Trường: ${surveyForm.schoolName || 'THPT Chuyên'} - Lớp: ${surveyForm.className || 'Khối 11'}. Kết quả: Chưa gặp: ${neverCount} | Gặp ít: ${rareCount} | Gặp nhiều: ${oftenCount} | Đã từng bị lừa: ${victimCount} - Điểm phòng thủ thực tế: ${preScore}/100đ.`,
+          `Khảo sát trải nghiệm lừa đảo trực tuyến (8 câu ABCD). Trường: ${surveyForm.schoolName || 'THPT Chuyên'} - Lớp: ${surveyForm.className || 'Khối 11'}. Khối: ${surveyForm.gradeLevel}, Giới tính: ${surveyForm.gender}, Đã học ATTT: ${surveyForm.safetyTraining}. Q1:${answers.q1}|Q2:${answers.q2}|Q3:${answers.q3}|Q4:${answers.q4}|Q5:${answers.q5}|Q6:${answers.q6}|Q7:${answers.q7}|Q8:${answers.q8}.`,
       };
 
       const res = await fetch('/api/research/survey', {
@@ -490,16 +297,16 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
         calculatedScore: preScore,
         postScore,
         safeCount,
-        neverCount,
-        rareCount,
-        oftenCount,
-        victimCount,
         participantName: displayName,
         schoolName: surveyForm.schoolName,
         className: surveyForm.className,
         isAnonymous: surveyForm.isAnonymous,
         location: surveyForm.location,
         demographicGroup: surveyForm.demographicGroup,
+        gradeLevel: surveyForm.gradeLevel,
+        gender: surveyForm.gender,
+        safetyTraining: surveyForm.safetyTraining,
+        eightQuestionAnswers: answers,
         apiSuccess: !!resData,
       });
 
@@ -511,12 +318,16 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
     } catch (err) {
       console.error('Survey submission error:', err);
       setSubmittedResult({
-        calculatedScore: 38,
-        postScore: 89,
-        safeCount: 3,
+        calculatedScore: 45,
+        postScore: 90,
+        safeCount: 5,
         participantName: surveyForm.participantName.trim() || 'Khảo nghiệm viên ViSEF',
         location: surveyForm.location,
         demographicGroup: surveyForm.demographicGroup,
+        gradeLevel: surveyForm.gradeLevel,
+        gender: surveyForm.gender,
+        safetyTraining: surveyForm.safetyTraining,
+        eightQuestionAnswers: surveyForm.eightQuestionAnswers,
         apiSuccess: true,
       });
     } finally {
@@ -544,9 +355,20 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
         'real_name',
         'school_name',
         'class_name',
+        'grade_level',
+        'gender',
+        'safety_training',
         'demographic_group',
         'province_location',
         'irb_consent_agreed',
+        'q1_answer',
+        'q2_answer',
+        'q3_answer',
+        'q4_answer',
+        'q5_answer',
+        'q6_answer',
+        'q7_answer',
+        'q8_answer',
         'ever_encountered_scam',
         'past_loss_type',
         'pre_confidence_score',
@@ -600,9 +422,20 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
           escapeCSV(realName),
           escapeCSV(s.schoolName || 'THPT Chuyên'),
           escapeCSV(s.className || 'Khối 11'),
+          escapeCSV(s.gradeLevel || 'Khối 11'),
+          escapeCSV(s.gender || 'Nam'),
+          escapeCSV(s.safetyTraining || 'Không'),
           escapeCSV(s.demographicGroup),
           escapeCSV(s.location || 'Hà Nội'),
           s.consentAgreed !== false ? '1' : '0',
+          escapeCSV(s.eightQuestionAnswers?.q1 || (s.surveyResponses?.everEncounteredScam ? 'B' : 'A')),
+          escapeCSV(s.eightQuestionAnswers?.q2 || (s.surveyResponses?.pastLossOrNearMiss === 'LOST_MONEY' ? 'D' : s.surveyResponses?.pastLossOrNearMiss === 'SHARED_OTP_PASSWORD' ? 'C' : s.surveyResponses?.pastLossOrNearMiss === 'SPOTTED_IN_TIME' ? 'B' : 'A')),
+          escapeCSV(s.eightQuestionAnswers?.q3 || 'A'),
+          escapeCSV(s.eightQuestionAnswers?.q4 || 'A'),
+          escapeCSV(s.eightQuestionAnswers?.q5 || (s.surveyResponses?.verificationHabitPre === 'DOUBLE_CHECK_OFFICIAL' ? 'C' : 'D')),
+          escapeCSV(s.eightQuestionAnswers?.q6 || (s.surveyResponses?.preConfidenceScore && s.surveyResponses.preConfidenceScore > 75 ? 'D' : 'C')),
+          escapeCSV(s.eightQuestionAnswers?.q7 || (s.testOutcome?.unsafeActionAvoided ? 'C' : 'B')),
+          escapeCSV(s.eightQuestionAnswers?.q8 || 'D'),
           s.surveyResponses?.everEncounteredScam ? '1' : '0',
           escapeCSV(s.surveyResponses?.pastLossOrNearMiss || 'NEVER'),
           s.surveyResponses?.preConfidenceScore || 50,
@@ -659,10 +492,13 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
       className: 'Khối 11',
       consentAgreed: true,
       demographicGroup: 'STUDENT',
+      gradeLevel: 'Khối 11',
+      gender: 'Nam',
+      safetyTraining: 'Không',
       location: 'Hà Nội',
       pastLossOrNearMiss: 'SPOTTED_IN_TIME',
       preConfidenceScore: 50,
-      trapAnswers: {
+      eightQuestionAnswers: {
         q1: '',
         q2: '',
         q3: '',
@@ -671,10 +507,6 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
         q6: '',
         q7: '',
         q8: '',
-        q9: '',
-        q10: '',
-        q11: '',
-        q12: '',
       },
       feedbackNote: '',
     });
@@ -803,7 +635,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       Câu trả lời của bạn đã được ghi nhận vào Cơ sở dữ liệu ViSEF 2026!
                     </h3>
                     <p className="text-xs text-slate-300 leading-relaxed">
-                      Khảo nghiệm viên <strong>{submittedResult.participantName}</strong> ({submittedResult.location}) đã hoàn thành toàn diện <strong>17 câu hỏi chuẩn hóa (bao gồm 12 bẫy thực tế)</strong>. Dữ liệu đã được gán nhãn cho nghiên cứu.
+                      Khảo nghiệm viên <strong>{submittedResult.participantName}</strong> ({submittedResult.location}) đã hoàn thành toàn diện <strong>8 câu hỏi chuẩn hóa khảo sát trải nghiệm lừa đảo</strong>. Dữ liệu đã được gán nhãn cho nghiên cứu.
                     </p>
                   </div>
                 </div>
@@ -811,23 +643,28 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
 
               {/* Personalized Score Card */}
               <div className="p-5 bg-slate-900 border border-purple-500/30 rounded-2xl space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex flex-wrap items-center justify-between border-b border-slate-800 pb-3 gap-2">
                   <span className="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                    Kết Quả Đo Lường Lỗ Hổng Nhận Thức Khi CHƯA DÙNG APP
+                    Đo Lường Nhận Thức Ban Đầu (8 Câu Khảo Sát)
                   </span>
-                  <span className="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
-                    Live Data Sync: OK
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono px-2.5 py-1 rounded bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
+                      {submittedResult.gradeLevel} • {submittedResult.gender}
+                    </span>
+                    <span className="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                      Live Sync OK
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                   <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800">
-                    <span className="text-[11px] text-slate-400 block font-medium">Bẫy Lừa Đảo Tránh Được</span>
+                    <span className="text-[11px] text-slate-400 block font-medium">Câu Trả Lời An Toàn / Tối Ưu</span>
                     <b className="text-2xl font-black text-amber-400 font-mono mt-1 block">
-                      {submittedResult.safeCount} / 12 Bẫy
+                      {submittedResult.safeCount} / 8 Câu
                     </b>
-                    <span className="text-[10px] text-slate-400 block mt-1">12 kịch bản bẫy thực tế</span>
+                    <span className="text-[10px] text-slate-400 block mt-1">Đánh giá theo chuẩn ViSEF</span>
                   </div>
 
                   <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800">
@@ -835,7 +672,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                     <b className="text-2xl font-black text-rose-400 font-mono mt-1 block">
                       {submittedResult.calculatedScore} / 100đ
                     </b>
-                    <span className="text-[10px] text-rose-300 block mt-1">Khi chưa có ScamGuard VN</span>
+                    <span className="text-[10px] text-rose-300 block mt-1">Trước khi dùng ScamGuard</span>
                   </div>
 
                   <div className="p-3.5 bg-slate-950 rounded-xl border border-slate-800">
@@ -847,32 +684,34 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                   </div>
                 </div>
 
-                {/* Real-world Exposure & Experience Breakdown */}
-                <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2">
-                  <span className="text-[11px] font-bold text-slate-300 block uppercase tracking-wider">
-                    📊 Thống Kê Tiếp Xúc Thực Tế (12 Tình Huống):
-                  </span>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
-                    <div className="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30">
-                      <span className="text-[10px] text-emerald-400 block font-medium">Chưa gặp bao giờ</span>
-                      <b className="text-base font-black text-white font-mono">{submittedResult.neverCount || 0}</b>
-                      <span className="text-[9px] text-slate-400 block">/ 12 thủ đoạn</span>
-                    </div>
-                    <div className="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/30">
-                      <span className="text-[10px] text-cyan-400 block font-medium">Gặp ít (1-2 lần)</span>
-                      <b className="text-base font-black text-white font-mono">{submittedResult.rareCount || 0}</b>
-                      <span className="text-[9px] text-slate-400 block">/ 12 thủ đoạn</span>
-                    </div>
-                    <div className="p-2 rounded-lg bg-amber-950/40 border border-amber-500/30">
-                      <span className="text-[10px] text-amber-400 block font-medium">Gặp thường xuyên</span>
-                      <b className="text-base font-black text-white font-mono">{submittedResult.oftenCount || 0}</b>
-                      <span className="text-[9px] text-slate-400 block">/ 12 thủ đoạn</span>
-                    </div>
-                    <div className="p-2 rounded-lg bg-rose-950/40 border border-rose-500/30">
-                      <span className="text-[10px] text-rose-400 block font-medium">Từng bị lừa / suýt bị</span>
-                      <b className="text-base font-black text-rose-300 font-mono">{submittedResult.victimCount || 0}</b>
-                      <span className="text-[9px] text-rose-400/80 block">/ 12 thủ đoạn</span>
-                    </div>
+                {/* 8-Question Response Summary Grid */}
+                <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-300 block uppercase tracking-wider">
+                      📋 Tóm Tắt 8 Câu Trả Lời Của Bạn:
+                    </span>
+                    <span className="text-[10px] text-purple-300 font-mono">
+                      Đã học ATTT: {submittedResult.safetyTraining}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    {SCENARIO_QUESTIONS.map((q) => {
+                      const ans = submittedResult.eightQuestionAnswers?.[q.key];
+                      const opt = q.options.find((o) => o.letter === ans);
+                      return (
+                        <div key={q.key} className="p-2 rounded-lg bg-slate-900 border border-slate-800/80 flex items-start gap-2">
+                          <span className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
+                            {q.number}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <span className="text-[10px] text-slate-400 block truncate">{q.category}</span>
+                            <span className="text-[11px] text-white font-medium block">
+                              <strong className="text-purple-300">{ans || '—'}</strong>: {opt?.text || 'Chưa ghi nhận'}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -965,7 +804,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                 </h3>
 
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Khảo sát này gồm <strong>17 câu hỏi chuẩn hóa</strong> (5 câu nhân khẩu học & 12 kịch bản bẫy thực tế) nhằm thu thập dữ liệu hiện trạng độc lập từ người tham gia <strong>trước khi sử dụng ứng dụng</strong>. 
+                  Khảo sát này gồm <strong>8 câu hỏi chuẩn hóa</strong> (ABCD) & 3 trường nhân khẩu học học đường nhằm thu thập dữ liệu hiện trạng độc lập từ người tham gia <strong>trước khi sử dụng ứng dụng</strong>. 
                   Mọi câu trả lời của bạn sẽ được tự động tổng hợp vào <strong>Biểu đồ Thống kê Suy luận Quốc gia</strong> để làm bằng chứng thực nghiệm ViSEF.
                 </p>
               </div>
@@ -976,8 +815,8 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                   <span>
                     Mục {surveyStep} / 2:{' '}
                     {surveyStep === 1
-                      ? 'Thông Tin Nhân Khẩu Học & Thói Quen (5 Câu)'
-                      : '12 Bài Tập Kịch Bản Bẫy Lừa Đảo Thực Tế'}
+                      ? 'Thông Tin Nhân Khẩu Học Học Đường & Thói Quen'
+                      : '8 Câu Khảo Sát Trải Nghiệm & Hành Vi Lừa Đảo'}
                   </span>
                   <span>Trang {surveyStep} của 2</span>
                 </div>
@@ -1005,6 +844,12 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       onSchoolNameChange={(val) => setSurveyForm((prev) => ({ ...prev, schoolName: val }))}
                       className={surveyForm.className}
                       onClassNameChange={(val) => setSurveyForm((prev) => ({ ...prev, className: val }))}
+                      gradeLevel={surveyForm.gradeLevel}
+                      onGradeLevelChange={(val) => setSurveyForm((prev) => ({ ...prev, gradeLevel: val }))}
+                      gender={surveyForm.gender}
+                      onGenderChange={(val) => setSurveyForm((prev) => ({ ...prev, gender: val }))}
+                      safetyTraining={surveyForm.safetyTraining}
+                      onSafetyTrainingChange={(val) => setSurveyForm((prev) => ({ ...prev, safetyTraining: val }))}
                       consentAgreed={surveyForm.consentAgreed}
                       onConsentAgreedChange={(val) => setSurveyForm((prev) => ({ ...prev, consentAgreed: val }))}
                       demographicGroup={surveyForm.demographicGroup}
@@ -1041,27 +886,27 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                         onClick={() => setSurveyStep(2)}
                         className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 disabled:opacity-50 text-white font-bold text-xs sm:text-sm rounded-xl sm:rounded-2xl shadow-xl shadow-purple-500/30 transition-all transform hover:scale-[1.01] active:scale-[0.98] cursor-pointer"
                       >
-                        <span>Tiếp Tục (Mục 2: 12 Câu Khảo Nghiệm Thực Tế)</span>
+                        <span>Tiếp Tục (Mục 2: 8 Câu Khảo Sát Trải Nghiệm Lừa Đảo)</span>
                         <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                       </button>
                     </div>
                   </div>
                 ) : (
-                  /* STEP 2: 12 REAL-WORLD SCENARIOS */
+                  /* STEP 2: 8 STANDARDIZED QUESTIONS (ABCD) */
                   <div className="space-y-5 sm:space-y-6">
                     {/* Header Notice Banner */}
                     <div className="p-3.5 sm:p-4 bg-purple-950/40 border border-purple-500/40 rounded-xl sm:rounded-2xl space-y-1.5 text-purple-200 text-xs">
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 font-black text-purple-300">
                           <AlertTriangle className="w-4 h-4 text-purple-400 shrink-0" />
-                          <span className="text-[11px] sm:text-xs">MỤC 2/2: 12 CÂU HỎI KHẢO SÁT TIẾP XÚC & TRẢI NGHIỆM THỦ ĐOẠN THỰC TẾ</span>
+                          <span className="text-[11px] sm:text-xs">MỤC 2/2: 8 CÂU HỎI KHẢO SÁT TRẢI NGHIỆM & HÀNH VI LỪA ĐẢO TRỰC TUYẾN</span>
                         </div>
                         <span className="text-[10px] sm:text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 shrink-0">
-                          12 Tình Huống Thực Tế
+                          8 Câu Chuẩn Hóa ABCD
                         </span>
                       </div>
                       <p className="text-slate-300 text-[10px] sm:text-[11px] leading-relaxed">
-                        Hãy trả lời trung thực theo trải nghiệm thực tế của bạn hoặc người thân: đã từng gặp hay chưa, mức độ tiếp xúc và cách bạn đã xử lý khi đối mặt với thủ đoạn. Dữ liệu sẽ đồng bộ trực tiếp lên biểu đồ thống kê nghiên cứu khoa học ViSEF 2026.
+                        Hãy chọn phương án phản ánh đúng nhất trải nghiệm thực tế và phản ứng của bạn khi tham gia môi trường mạng. Dữ liệu sẽ đồng bộ trực tiếp lên hệ thống biểu đồ nghiên cứu khoa học ViSEF 2026.
                       </p>
                     </div>
 
@@ -1116,7 +961,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                           <Gauge className="w-4 h-4 text-cyan-400" />
                           <span className="font-bold text-white">Tiến độ hoàn thành:</span>
                           <span className="font-black text-purple-300 font-mono text-sm">
-                            {answeredTrapCount}/{totalTrapsCount} kịch bản
+                            {answeredTrapCount}/{totalTrapsCount} câu
                           </span>
                         </div>
                         <span className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
@@ -1124,7 +969,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                             ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
                             : 'bg-amber-500/20 border-amber-500/40 text-amber-300'
                         }`}>
-                          {isAllTrapsAnswered ? `✅ Đã điền đủ ${totalTrapsCount}/${totalTrapsCount} câu` : `⚠️ Còn ${totalTrapsCount - answeredTrapCount} câu chưa chọn`}
+                          {isAllTrapsAnswered ? `✅ Đã hoàn thành đủ ${totalTrapsCount}/${totalTrapsCount} câu` : `⚠️ Còn ${totalTrapsCount - answeredTrapCount} câu chưa chọn`}
                         </span>
                       </div>
 
@@ -1136,17 +981,17 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                         />
                       </div>
 
-                      {/* Scenario Navigation Chips */}
+                      {/* Question Navigation Chips */}
                       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-0.5 scrollbar-none">
                         <span className="text-[10px] text-slate-400 font-mono uppercase shrink-0 mr-1">Chuyển nhanh:</span>
                         {SCENARIO_QUESTIONS.map((q) => {
-                          const isAnswered = !!surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers];
+                          const isAnswered = !!surveyForm.eightQuestionAnswers[q.key as keyof typeof surveyForm.eightQuestionAnswers];
                           return (
                             <button
                               key={q.key}
                               type="button"
                               onClick={() => {
-                                const el = document.getElementById(`trap-scenario-${q.trapIndex}`);
+                                const el = document.getElementById(`survey-q-${q.number}`);
                                 if (el) {
                                   el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                 }
@@ -1156,7 +1001,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                                   ? 'bg-emerald-950/60 border border-emerald-500/50 text-emerald-300 hover:bg-emerald-900/60'
                                   : 'bg-slate-950 border border-slate-700 text-slate-400 hover:border-purple-500 hover:text-white'
                               }`}
-                              title={`Chuyển đến ${q.title}`}
+                              title={`Chuyển đến Câu ${q.number}`}
                             >
                               <span>Câu {q.number}</span>
                               {isAnswered ? (
@@ -1181,7 +1026,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                           type="button"
                           onClick={() => {
                             if (missingTraps[0]) {
-                              const el = document.getElementById(`trap-scenario-${missingTraps[0].trapIndex}`);
+                              const el = document.getElementById(`survey-q-${missingTraps[0].number}`);
                               if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             }
                           }}
@@ -1192,16 +1037,16 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       </div>
                     )}
 
-                    {/* 12 Real-World Scenarios List */}
+                    {/* 8 Standardized Questions List */}
                     <div className="space-y-4 sm:space-y-6">
                       {SCENARIO_QUESTIONS.map((q) => {
-                        const currentAnswer = surveyForm.trapAnswers[q.key as keyof typeof surveyForm.trapAnswers];
+                        const currentAnswer = surveyForm.eightQuestionAnswers[q.key as keyof typeof surveyForm.eightQuestionAnswers];
                         const isAnswered = !!currentAnswer;
 
                         return (
                           <div
                             key={q.key}
-                            id={`trap-scenario-${q.trapIndex}`}
+                            id={`survey-q-${q.number}`}
                             className={`p-4 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl border transition-all duration-200 space-y-3.5 sm:space-y-4 shadow-lg ${
                               isAnswered
                                 ? 'bg-slate-900/90 border-slate-700/80 shadow-slate-950/50'
@@ -1210,15 +1055,19 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                           >
                             {/* Question Header */}
                             <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 sm:pb-3 border-b border-slate-800">
-                              <div className="flex items-center gap-2.5">
-                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center justify-center font-black text-xs sm:text-sm shrink-0">
+                              <div className="flex items-start gap-2.5">
+                                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center justify-center font-black text-xs sm:text-sm shrink-0 mt-0.5">
                                   {q.number}
                                 </div>
                                 <div>
                                   <label className="text-white font-black text-xs sm:text-sm md:text-base block">
                                     {q.title} <span className="text-rose-400">*</span>
                                   </label>
-                                  <span className="text-[10px] sm:text-[11px] text-slate-400">Tình huống thực tế {q.trapIndex}/{totalTrapsCount}</span>
+                                  <div className="flex flex-wrap items-center gap-2 mt-1">
+                                    <span className="text-[10px] sm:text-[11px] text-slate-400">
+                                      Chỉ số phân tích: <strong className="text-cyan-300 font-medium">{q.analysisMetric}</strong>
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
 
@@ -1229,7 +1078,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                                 {isAnswered ? (
                                   <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[9px] sm:text-[10px] font-bold flex items-center gap-1">
                                     <Check className="w-3 h-3 text-emerald-400" />
-                                    Đã chọn
+                                    Đã chọn ({currentAnswer})
                                   </span>
                                 ) : (
                                   <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[9px] sm:text-[10px] font-bold flex items-center gap-1 animate-pulse">
@@ -1240,37 +1089,35 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                               </div>
                             </div>
 
-                            {/* Realistic Simulation Message Card */}
-                            <div className="p-3 sm:p-4 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800/90 text-slate-200 font-mono text-[11px] sm:text-xs leading-relaxed space-y-1 shadow-inner">
-                              <div className="flex items-center gap-2 text-indigo-300 font-bold text-[10px] sm:text-[11px] border-b border-slate-800 pb-1.5 mb-1.5">
-                                <span className="text-sm sm:text-base">{q.icon}</span>
-                                <span>{q.source}</span>
-                              </div>
-                              <p className="text-slate-300 pl-1">{q.content}</p>
-                            </div>
+                            {/* Description helper */}
+                            {q.description && (
+                              <p className="text-slate-400 text-[11px] italic pl-1 border-l-2 border-purple-500/30">
+                                {q.description}
+                              </p>
+                            )}
 
-                            {/* 4 Spacious Options Grid / Stack */}
-                            <div className="space-y-2.5 sm:space-y-3 pt-1">
+                            {/* 4 ABCD Options */}
+                            <div className="space-y-2 sm:space-y-2.5 pt-1">
                               <div className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                                Chọn mức độ tiếp xúc / trải nghiệm thực tế của bạn:
+                                Chọn 1 đáp án phù hợp nhất với bạn:
                               </div>
                               <div className="grid grid-cols-1 gap-2 sm:gap-2.5">
                                 {q.options.map((opt) => {
-                                  const isSelected = currentAnswer === opt.id;
+                                  const isSelected = currentAnswer === opt.letter;
                                   return (
                                     <label
-                                      key={opt.id}
+                                      key={opt.letter}
                                       onClick={() => {
                                         setSurveyForm({
                                           ...surveyForm,
-                                          trapAnswers: {
-                                            ...surveyForm.trapAnswers,
-                                            [q.key]: opt.id,
+                                          eightQuestionAnswers: {
+                                            ...surveyForm.eightQuestionAnswers,
+                                            [q.key]: opt.letter,
                                           },
                                         });
                                         if (validationWarning) setValidationWarning(null);
                                       }}
-                                      className={`flex items-start gap-3 sm:gap-3.5 p-3 sm:p-4 rounded-xl sm:rounded-2xl border text-[11px] sm:text-xs cursor-pointer transition-all duration-150 select-none active:scale-[0.99] ${
+                                      className={`flex items-start gap-3 sm:gap-3.5 p-3 sm:p-3.5 rounded-xl sm:rounded-2xl border text-[11px] sm:text-xs cursor-pointer transition-all duration-150 select-none active:scale-[0.99] ${
                                         isSelected
                                           ? 'bg-purple-600/20 border-purple-500 text-white ring-2 ring-purple-500/50 shadow-md shadow-purple-950/40'
                                           : 'bg-slate-950/80 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-950 hover:text-white'
@@ -1290,7 +1137,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                                       </div>
                                       <input
                                         type="radio"
-                                        name={`trap_${q.key}`}
+                                        name={`survey_q_${q.key}`}
                                         checked={isSelected}
                                         onChange={() => {}}
                                         className="mt-1 w-3.5 h-3.5 sm:w-4 sm:h-4 accent-purple-600 shrink-0 cursor-pointer"
@@ -1305,12 +1152,12 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       })}
                     </div>
 
-                    {/* Missing Traps Bottom Alert */}
+                    {/* Missing Questions Bottom Alert */}
                     {!isAllTrapsAnswered && (
                       <div
                         onClick={() => {
                           if (missingTraps[0]) {
-                            const el = document.getElementById(`trap-scenario-${missingTraps[0].trapIndex}`);
+                            const el = document.getElementById(`survey-q-${missingTraps[0].number}`);
                             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                           }
                         }}
@@ -1318,7 +1165,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       >
                         <div className="flex items-center gap-2 font-bold">
                           <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 shrink-0" />
-                          <span className="text-[11px] sm:text-xs">Bạn còn {totalTrapsCount - answeredTrapCount} câu hỏi thực tế chưa chọn phương án xử lý!</span>
+                          <span className="text-[11px] sm:text-xs">Bạn còn {totalTrapsCount - answeredTrapCount} câu khảo sát chưa chọn phương án!</span>
                         </div>
                         <span className="w-full sm:w-auto text-center justify-center px-3 py-1.5 bg-amber-600/30 text-amber-300 border border-amber-500/40 rounded-lg sm:rounded-xl text-[11px] sm:text-xs font-bold shrink-0 flex items-center gap-1">
                           <span>Đi tới câu thiếu</span>
@@ -1334,7 +1181,7 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                       </label>
                       <textarea
                         rows={2}
-                        placeholder="Nhập cảm nhận của bạn về độ tinh vi của các thủ đoạn lừa đảo thực tế..."
+                        placeholder="Nhập cảm nhận của bạn về các chiêu trò lừa đảo trực tuyến hiện nay..."
                         value={surveyForm.feedbackNote}
                         onChange={(e) => setSurveyForm({ ...surveyForm, feedbackNote: e.target.value })}
                         className="w-full px-3 py-2 sm:px-3.5 sm:py-2.5 bg-slate-950 border border-slate-700 rounded-lg sm:rounded-xl text-white focus:outline-none focus:border-purple-500 text-xs resize-none"
@@ -1369,8 +1216,8 @@ export const NationalScienceFairDemoModal: React.FC<NationalScienceFairDemoModal
                         )}
                         <span>
                           {isAllTrapsAnswered
-                            ? 'Gửi Phiếu & Đẩy Dữ Liệu Lên Biểu Đồ ViSEF (Đủ 17/17 Câu)'
-                            : `Gửi Phiếu (Còn ${totalTrapsCount - answeredTrapCount} câu kịch bản chưa chọn)`}
+                            ? 'Gửi Phiếu & Đẩy Dữ Liệu Lên Biểu Đồ ViSEF (Đủ 8/8 Câu)'
+                            : `Gửi Phiếu (Còn ${totalTrapsCount - answeredTrapCount} câu chưa chọn)`}
                         </span>
                       </button>
                     </div>

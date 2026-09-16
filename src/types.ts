@@ -787,6 +787,21 @@ export type SurveyDemographicGroup =
   | 'BUSINESS_OWNER'
   | 'TEACHER_JUDGE';
 
+export type GradeLevel = 'Khối 10' | 'Khối 11' | 'Khối 12' | 'Khác / Giáo viên';
+export type GenderGroup = 'Nam' | 'Nữ' | 'Khác' | 'Không muốn trả lời';
+export type SafetyTrainingStatus = 'Có' | 'Không';
+
+export interface EightQuestionSurveyAnswers {
+  q1: 'A' | 'B' | 'C' | 'D'; // 1. Từng gặp hình thức lừa đảo trực tuyến chưa
+  q2: 'A' | 'B' | 'C' | 'D'; // 2. Từng bị lừa đảo ở mức độ nào
+  q3: 'A' | 'B' | 'C' | 'D'; // 3. Thường gặp qua kênh nào nhất
+  q4: 'A' | 'B' | 'C' | 'D'; // 4. Hình thức lừa đảo gặp nhiều nhất
+  q5: 'A' | 'B' | 'C' | 'D'; // 5. Hành động đầu tiên khi nhận tin đáng ngờ
+  q6: 'A' | 'B' | 'C' | 'D'; // 6. Tự đánh giá khả năng nhận biết
+  q7: 'A' | 'B' | 'C' | 'D'; // 7. Phản ứng khi bị yêu cầu OTP / Mật khẩu
+  q8: 'A' | 'B' | 'C' | 'D'; // 8. Nhu cầu luyện tập mô phỏng SCAMGUARD
+}
+
 export interface CommunitySurveySubmission {
   id: string;
   participantName: string;
@@ -797,6 +812,12 @@ export interface CommunitySurveySubmission {
   schoolName?: string;
   className?: string;
   consentAgreed?: boolean;
+  // 3 School ViSEF Demographics
+  gradeLevel?: GradeLevel;
+  gender?: GenderGroup;
+  safetyTraining?: SafetyTrainingStatus;
+  // Standardized 8-question answers
+  eightQuestionAnswers?: EightQuestionSurveyAnswers;
   surveyResponses: {
     everEncounteredScam: boolean;
     pastLossOrNearMiss: 'LOST_MONEY' | 'SHARED_OTP_PASSWORD' | 'CLICKED_SUSPICIOUS_LINK' | 'SPOTTED_IN_TIME' | 'NEVER';
@@ -833,6 +854,42 @@ export interface SurveyAnalyticsData {
     meanUnsafeRatePre: number;
     meanUnsafeRatePost: number;
   }>;
+  // ViSEF School Survey Specialized Analytics
+  schoolResearchFunnel?: {
+    encounteredRatePct: number;
+    nearMissOrVictimPct: number;
+    topChannel: string;
+    topChannelPct: number;
+    topTactic: string;
+    topTacticPct: number;
+    selfConfidenceGoodPct: number;
+    demandForPlatformPct: number;
+    otpDefenseStrictPct: number;
+  };
+  schoolDemographicsBreakdown?: {
+    grade10Count: number;
+    grade11Count: number;
+    grade12Count: number;
+    teacherCount: number;
+    maleCount: number;
+    femaleCount: number;
+    trainedCount: number;
+    untrainedCount: number;
+    trainedOtpStrictPct: number;
+    untrainedOtpStrictPct: number;
+    trainedEncounteredPct: number;
+    untrainedEncounteredPct: number;
+  };
+  eightQuestionBreakdown?: {
+    q1: Record<'A' | 'B' | 'C' | 'D', number>;
+    q2: Record<'A' | 'B' | 'C' | 'D', number>;
+    q3: Record<'A' | 'B' | 'C' | 'D', number>;
+    q4: Record<'A' | 'B' | 'C' | 'D', number>;
+    q5: Record<'A' | 'B' | 'C' | 'D', number>;
+    q6: Record<'A' | 'B' | 'C' | 'D', number>;
+    q7: Record<'A' | 'B' | 'C' | 'D', number>;
+    q8: Record<'A' | 'B' | 'C' | 'D', number>;
+  };
   preAppBaselineStats: {
     encounteredScamPct: number;
     clickedLinkOrCompromisedPct: number;
